@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b6b52">
+  <meta name="description" content="محلل آمن بالذكاء الاصطناعي لبطاقات نتائج نافس للصف الثالث الابتدائي والسادس الابتدائي والثالث المتوسط، يقرأ بيانات كل ملف بصورة مستقلة مع مراجعة بشرية وخطة تحسين وتقارير قابلة للتصدير.">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; worker-src 'self' blob: https://cdn.jsdelivr.net; child-src 'self' blob: https://cdn.jsdelivr.net; connect-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com https://*.workers.dev https://*.pages.dev; img-src 'self' data: blob:; style-src 'self'; style-src-elem 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+  <title>محلل نتائج نافس بالذكاء الاصطناعي — الإصدار ٧٫١</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <a class="skipLink" href="#mainContent">انتقل إلى المحتوى</a>
+
+  <header class="topbar noPrint">
+    <div class="shell topbarInner">
+      <div class="brand">
+        <img src="assets/images/logo.jpg" alt="شعار محلل نتائج نافس" class="brandLogo" width="66" height="66">
+        <div>
+          <strong>محلل نتائج نافس وخطة التحسين</strong>
+          <span>الإصدار ٧٫١ AI الآمن · قراءة متعددة الوسائط ومراجعة إلزامية</span>
+        </div>
+      </div>
+      <div class="topBadges">
+        <span class="badge info">الثالث · السادس · ثالث المتوسط</span>
+        <button class="button quiet small" id="privacyBtn" type="button">الخصوصية والأمان</button>
+        <button class="button quiet small" id="resetBtn" type="button">بدء جديد</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent">
+    <section class="hero noPrint">
+      <div class="shell heroGrid">
+        <div class="heroCopy">
+          <span class="eyebrow">دقة قبل السرعة · مراجعة قبل الاعتماد</span>
+          <h1>من بطاقة نافس إلى تشخيص واضح وخطة تحسين قابلة للقياس</h1>
+          <p>يقرأ الإصدار ٧٫١ كل بطاقة نافس مرفوعة كعملية مستقلة، ويفهم صفحات PDF والرسوم والنصوص بالذكاء الاصطناعي، ثم يمرر القيم إلى محرك تحقق حسابي محلي. لا تُقبل قيمة غير مؤكدة بالتخمين، ولا تنتقل بيانات ملف سابق إلى ملف جديد.</p>
+          <div class="heroActions">
+            <button class="button primary large" type="button" data-hero-action="choose">اختيار بطاقة نافس</button>
+            <button class="button secondary large" type="button" data-hero-action="manual">إدخال يدوي</button>
+          </div>
+          <div class="supportStrip" aria-label="المراحل المدعومة">
+            <span>الثالث الابتدائي</span><span>السادس الابتدائي</span><span>الثالث المتوسط</span>
+            <span>PDF · PNG · JPG</span><span>Word · Excel · PowerPoint · PDF</span>
+          </div>
+        </div>
+        <div class="heroVisual" aria-hidden="true">
+          <div class="visualRing ringOne"></div><div class="visualRing ringTwo"></div>
+          <div class="visualCard mainVisualCard"><span>📊</span><strong>تحليل موثوق</strong><small>قراءة · تحقق · تحسين</small></div>
+          <div class="visualCard miniCard one">جميع الصفحات</div>
+          <div class="visualCard miniCard two">لا تخمين رقمي</div>
+          <div class="visualCard miniCard three">مخرجات حقيقية</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trustSection noPrint" aria-label="ضمانات الدقة والخصوصية">
+      <div class="shell trustGrid">
+        <article><span>١</span><div><strong>اتصال AI آمن</strong><p>يُرسل محتوى البطاقة مؤقتًا عبر خادم وسيط مشفّر إلى OpenAI API للقراءة، بينما لا يظهر مفتاح API في GitHub أو المتصفح.</p></div></article>
+        <article><span>٢</span><div><strong>لا تخمين للأرقام</strong><p>يُطلب من القارئ إعادة null عند عدم التأكد، ثم تمنع اختبارات الاتساق اعتماد القيم المتعارضة.</p></div></article>
+        <article><span>٣</span><div><strong>مراجعة إلزامية</strong><p>لا يُبنى التحليل ولا تُفعّل الصادرات قبل تأكيد مطابقة القيم بالبطاقة الأصلية.</p></div></article>
+        <article><span>٤</span><div><strong>تنبيه مهني</strong><p>المخرجات تحليل مدرسي مساند وليست تقريرًا رسميًا صادرًا من هيئة تقويم التعليم والتدريب.</p></div></article>
+      </div>
+    </section>
+
+    <section class="section noPrint" id="readerSection">
+      <div class="shell">
+        <div class="sectionHeading">
+          <div><span class="stepNumber">١</span><h2>قراءة البطاقة</h2></div>
+          <p>يفضل ملف PDF الأصلي. قارئ AI هو المسار الأساسي بعد ربط الخادم، والمعاينة تتم محليًا. الحد الحالي لحجم الملف ٢٠ ميجابايت، دون حد مخصص لعدد مرات الاستخدام داخل التطبيق.</p>
+        </div>
+
+        <div class="readerGrid">
+          <article class="panel">
+            <div id="dropZone" class="dropZone" tabindex="0" role="button" aria-controls="fileInput" aria-label="اختيار أو إسقاط بطاقة نافس">
+              <div class="dropIcon" aria-hidden="true">＋</div>
+              <strong>اسحبي بطاقة نافس هنا</strong>
+              <p>أو اختاري PDF أو PNG أو JPG من جهازك.</p>
+              <button class="button primary" id="chooseFileBtn" type="button">اختيار ملف</button>
+              <input id="fileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" hidden>
+            </div>
+
+            <div class="aiConnectionCard" aria-live="polite">
+              <div><strong>قارئ الذكاء الاصطناعي الآمن</strong><small id="aiStatusText">جاري فحص الإعداد…</small></div>
+              <div class="buttonRow"><span id="aiStatusBadge" class="badge info">فحص…</span><button class="button quiet small" id="testAiBtn" type="button">فحص الاتصال</button></div>
+            </div>
+
+            <div class="readerOptions">
+              <label class="field">
+                <span>تلميح الصف عند تعذر اكتشافه</span>
+                <select id="gradeHint">
+                  <option value="">اكتشاف تلقائي</option>
+                  <option value="g3">الثالث الابتدائي</option>
+                  <option value="g6">السادس الابتدائي</option>
+                  <option value="g9">الثالث المتوسط</option>
+                </select>
+                <small>لا يفرض هذا الاختيار أي رقم؛ بل يحدد قالب المواد والمجالات فقط.</small>
+              </label>
+              <label class="toggleRow">
+                <input id="ocrToggle" type="checkbox" checked>
+                <span><b>OCR محلي احتياطي</b><small>يُستخدم فقط إذا لم يكن قارئ AI مربوطًا أو عند طلب إعادة القراءة المحلية.</small></span>
+              </label>
+            </div>
+
+            <div class="buttonRow">
+              <button class="button quiet small" id="manualBtn" type="button">إدخال يدوي</button>
+            </div>
+
+            <div id="progressWrap" class="progressWrap hidden" aria-hidden="true" aria-live="polite">
+              <div class="progressTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i id="progressBar"></i></div>
+              <div class="progressMeta"><span id="progressLabel">تهيئة القراءة</span><b id="progressPercent">٠٪</b></div>
+            </div>
+            <div id="readerStatus" class="statusBox" role="status" aria-live="polite">لم يتم اختيار ملف بعد.</div>
+            <div id="readerResultActions" class="readerResultActions hidden">
+              <button class="button primary small" id="jumpReviewBtn" type="button">عرض القيم المستخرجة</button>
+              <button class="button secondary small hidden" id="retryOcrBtn" type="button">إعادة القراءة بـ OCR كامل</button>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panelTitle">
+              <div><h3>المعاينة وسجل المصدر</h3><p>تعرض المعاينة محليًا لمطابقة الأرقام. عند قراءة AI يُرسل المحتوى باسم تقني عام ولا يدخل اسم الملف الأصلي في الطلب أو التقرير.</p></div>
+              <span id="sourceBadge" class="badge">بانتظار الملف</span>
+            </div>
+            <div id="fileSummary" class="fileSummary empty">لا توجد بطاقة مرفوعة.</div>
+            <div id="previewGrid" class="previewGrid"><div class="emptyState">ستظهر صفحات البطاقة هنا بعد فتح الملف.</div></div>
+            <div class="buttonRow end"><button class="button quiet small hidden" id="rawTextBtn" type="button">عرض النص الخام المستخرج</button></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section hidden noPrint" id="reviewSection">
+      <div class="shell">
+        <div class="sectionHeading">
+          <div><span class="stepNumber">٢</span><h2>مراجعة القيم المستخرجة</h2></div>
+          <p>راجعي كل خانة من البطاقة الأصلية. الفراغ يعني أن القيمة لم تُقرأ بثقة، وليس أن قيمتها صفر.</p>
+        </div>
+
+        <article class="panel">
+          <div class="panelTitle">
+            <div><h3>بيانات المدرسة والاختبار</h3><p>يمكن تصحيح أي قيمة قبل بناء التحليل، ولا يُحفظ اسم ملف المصدر في التقرير أو JSON.</p></div>
+            <span id="sourceBadgeReview" class="badge info">مراجعة بشرية</span>
+          </div>
+          <div id="metadataFields" class="formGrid"></div>
+        </article>
+
+        <div id="subjectsRoot" class="subjectsRoot"></div>
+
+        <article class="panel validationPanel">
+          <div class="panelTitle"><div><h3>اختبارات الاتساق والجودة</h3><p>الأخطاء الحمراء تمنع التحليل؛ التنبيهات الصفراء تتطلب مراجعة واعية.</p></div><span id="validationCounter" class="badge">٠ أخطاء · ٠ تنبيهات</span></div>
+          <div id="validationRoot"></div>
+        </article>
+
+        <article class="panel approvalPanel">
+          <label class="approvalCheck">
+            <input id="reviewConfirmed" type="checkbox">
+            <span><b>راجعت جميع القيم وطابقتها مع بطاقة نافس الأصلية.</b><small>أفهم أن القراءة الآلية مساعدة، وأن الاعتماد النهائي مسؤولية المستخدم، وأن الخانات الفارغة لا تمثل صفرًا.</small></span>
+          </label>
+          <div class="buttonRow end"><button class="button primary large" id="analyzeBtn" type="button">اعتماد القيم وبناء التحليل والتقرير</button></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section hidden" id="outputSection">
+      <div class="shell">
+        <div class="sectionHeading noPrint">
+          <div><span class="stepNumber">٣</span><h2>التحليل والتقرير النهائي</h2></div>
+          <p>تُنشأ الصادرات على جهازك من القيم التي راجعتها، ويمكن حفظ PDF من نافذة الطباعة.</p>
+        </div>
+
+        <div class="exportBar noPrint">
+          <div><strong>تصدير حقيقي قابل للتحرير</strong><span>Word وExcel وPowerPoint وJSON، أو طباعة التقرير بصيغة PDF.</span></div>
+          <div class="buttonRow">
+            <button class="button primary" id="printBtn" type="button">طباعة / حفظ PDF</button>
+            <button class="button office word" id="wordBtn" type="button">Word</button>
+            <button class="button office excel" id="excelBtn" type="button">Excel</button>
+            <button class="button office ppt" id="pptBtn" type="button">PowerPoint</button>
+            <button class="button quiet" id="jsonBtn" type="button">JSON</button>
+          </div>
+          <label class="smallToggle"><input id="includeWorksheets" type="checkbox" checked><span>إدراج أوراق العمل في التقرير وWord</span></label>
+        </div>
+
+        <div id="analysisRoot" class="analysisRoot"></div>
+        <div id="reportRoot" class="reportRoot"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="siteFooter noPrint">
+    <div class="shell footerCard">
+      <img src="assets/images/logo.jpg" alt="" width="72" height="72">
+      <div><strong>أ/ فاطمة هزازي</strong><span>ملتقى معلمي ومعلمات الرياضيات · ملتقى التعليم التفاعلي</span></div>
+      <small>الإصدار ٧٫١ AI الآمن — لا يُكشف مفتاح API للمستفيد، ولا توجد قاعدة بيانات للمدارس في الحزمة. تُرسل البطاقة مؤقتًا إلى خدمة AI للقراءة عند تفعيلها، ثم يبقى التحليل والتصدير محليين.</small>
+    </div>
+  </footer>
+
+  <dialog class="modal" id="privacyDialog">
+    <form method="dialog">
+      <header class="modalHead"><h2>الخصوصية والأمان</h2><button type="submit" aria-label="إغلاق">×</button></header>
+      <div class="modalBody">
+        <p><b>ما الذي يحدث للملف في الإصدار ٧؟</b> تُنشأ المعاينة في جهازك. وعند تفعيل قارئ AI تُرسل نسخة مؤقتة من محتوى البطاقة عبر اتصال HTTPS إلى Cloudflare Worker ثم إلى OpenAI API للقراءة المنظمة.</p>
+        <ul>
+          <li>مفتاح OpenAI API محفوظ كسر في الخادم الوسيط ولا يوجد داخل GitHub أو JavaScript في المتصفح.</li>
+          <li>لا يرسل التطبيق اسم الملف الأصلي؛ يستخدم اسمًا عامًا مثل <code>nafis-card.pdf</code>.</li>
+          <li>الخادم المرفق لا ينشئ قاعدة بيانات ولا يكتب محتوى البطاقة إلى سجلات التطبيق، ويرسل طلب OpenAI مع <code>store:false</code>.</li>
+          <li>الناتج من AI مقيد بمخطط JSON ثابت، ثم يمر باختبارات اتساق حسابية، وتظل المراجعة البشرية إلزامية.</li>
+          <li>عند عدم التأكد من رقم يُطلب من النموذج إرجاع قيمة فارغة بدل التخمين.</li>
+          <li>يمكن استخدام الإدخال اليدوي إذا لم ترغبي بإرسال البطاقة إلى خدمة AI.</li>
+        </ul>
+        <p><b>مهم:</b> هذه أداة تحليل مدرسية مساندة. راجعي سياسة الجهة التي تتبعين لها قبل إرسال وثائق تحتوي بيانات حساسة إلى أي خدمة سحابية.</p>
+      </div>
+      <footer class="modalFoot"><button class="button primary" type="submit">فهمت</button></footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal wide" id="rawDialog">
+    <form method="dialog">
+      <header class="modalHead"><h2>النص الخام المستخرج</h2><button type="submit" aria-label="إغلاق">×</button></header>
+      <div class="modalBody"><p>هذا النص للتشخيص فقط وقد يحتوي ترتيبًا غير مثالي. لا يُستخدم وحده لاعتماد الأرقام.</p><pre id="rawText"></pre></div>
+      <footer class="modalFoot"><button class="button primary" type="submit">إغلاق</button></footer>
+    </form>
+  </dialog>
+
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
