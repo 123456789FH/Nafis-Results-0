@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>قارئ ملفات نافس الذكي</title>
+<title>محلل نتائج نافس وخطة التحسين — الإصدار ٦</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap');
 :root{--g:#0b6b52;--g2:#118667;--ink:#183c33;--muted:#657b73;--line:#dce8e3;--soft:#f4faf7;--red:#c90000;--orange:#df7d00;--mint:#86d2a7;--green:#0a9d58;--purple:#6252a2;--blue:#2aa5d6;--gray:#a9aaa9;--gold:#c99828}
@@ -45,22 +45,145 @@ h1,h2,h3,h4,b,strong,.btn,.pill,.field label{font-weight:800}
 @media(max-width:560px){.logo{width:54px;height:54px}.brand h1{font-size:17px}.footerCard{flex-direction:column;padding:24px 16px}.footerMeta{gap:7px;line-height:1.8}.footerDot{display:none}.heroLogo{width:112px;height:112px}}
 @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.reportSignature{page-break-inside:avoid}}
 
+/* ===== لوحة التحليل وخطة التحسين - الإصدار ٦ ===== */
+:root{
+  --v6-turq:#118f95;
+  --v6-turq-dark:#0b6670;
+  --v6-green:#2e8b62;
+  --v6-green-soft:#eaf7f0;
+  --v6-gray:#667a76;
+  --v6-gray-soft:#f3f6f5;
+  --v6-red:#b42318;
+  --v6-red-soft:#fff0ee;
+  --v6-amber:#a86600;
+  --v6-amber-soft:#fff7e5;
+  --v6-blue-soft:#eef8fa;
+}
+.reviewGate{margin-top:18px;border:1px solid #b8d9d8;background:linear-gradient(135deg,#f1fbfb,#f7fcf9);border-radius:17px;padding:15px 17px}
+.reviewGate label{display:flex;align-items:flex-start;gap:10px;font-weight:800;color:#144f50;line-height:1.8;cursor:pointer}
+.reviewGate input{width:20px;height:20px;margin-top:4px;accent-color:var(--v6-turq);flex:0 0 auto}
+.reviewGate small{display:block;color:#617773;font-weight:600;margin:5px 30px 0 0}
+.v6Section{margin-top:18px;border:1px solid #d8e6e2;border-radius:20px;background:#fff;padding:18px;box-shadow:0 10px 28px #174c3e0a}
+.v6SectionTitle{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.v6SectionTitle h3,.v6SectionTitle h4{margin:0;color:#155b58}
+.v6SectionTitle p{margin:4px 0 0;color:#657c77;font-size:13px;line-height:1.8}
+.v6Kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.v6Kpi{border:1px solid #dce9e6;border-radius:16px;padding:14px;background:linear-gradient(145deg,#fff,#f7fbfa)}
+.v6Kpi b{display:block;font-size:28px;color:var(--v6-turq-dark);line-height:1.2}
+.v6Kpi small{display:block;color:#687d78;margin-top:6px;font-weight:700}
+.v6Kpi.alert b{color:var(--v6-red)}
+.v6Kpi.warn b{color:var(--v6-amber)}
+.v6Kpi.good b{color:var(--v6-green)}
+.v6TableWrap{overflow:auto;border:1px solid #dce7e4;border-radius:15px}
+.v6Table{width:100%;border-collapse:collapse;min-width:900px;background:#fff}
+.v6Table th{background:#edf7f6;color:#164f4d;font-size:12px;font-weight:900;padding:11px 9px;border-bottom:1px solid #d8e7e4;white-space:nowrap}
+.v6Table td{padding:10px 9px;border-bottom:1px solid #e8efed;text-align:center;font-size:13px;vertical-align:top;line-height:1.7}
+.v6Table tr:last-child td{border-bottom:0}
+.v6Table td:first-child,.v6Table td:nth-child(2){text-align:right}
+.v6Tag{display:inline-flex;align-items:center;justify-content:center;gap:5px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:900;white-space:nowrap}
+.v6Tag.strength{background:var(--v6-green-soft);color:#176844;border:1px solid #c7e7d5}
+.v6Tag.improve{background:var(--v6-amber-soft);color:#855300;border:1px solid #f0dcae}
+.v6Tag.urgent{background:var(--v6-red-soft);color:#982018;border:1px solid #f0c8c3}
+.v6Tag.nodata{background:#f1f4f3;color:#62716e;border:1px solid #dfe5e3}
+.v6Cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.v6Card{border:1px solid #dce8e5;border-radius:16px;padding:14px;background:#fbfdfc;line-height:1.85}
+.v6Card h4{margin:0 0 8px;color:#1c5c55;font-size:15px}
+.v6Card p{margin:5px 0;color:#4d6962;font-size:13px}
+.v6Card strong{color:#234e47}
+.v6Priority{position:relative;padding-top:18px}
+.v6Priority::before{content:attr(data-rank);position:absolute;top:-10px;right:14px;background:var(--v6-turq);color:#fff;border-radius:999px;padding:5px 11px;font-size:11px;font-weight:900}
+.v6PlanGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.v6PlanBox{border:1px solid #dbe7e4;border-radius:16px;padding:15px;background:#fff}
+.v6PlanBox h4{margin:0 0 9px;color:#165e5d}
+.v6PlanBox ul{margin:0;padding-right:19px;line-height:1.95;color:#46655e;font-size:13px}
+.v6UnitHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px;border-radius:15px;background:linear-gradient(135deg,#edf9f8,#f5fbf7);border:1px solid #d1e7e3;margin:18px 0 12px}
+.v6UnitHeader h4{margin:0;color:#0e6564}
+.v6UnitHeader small{color:#657c77;font-weight:700}
+.v6Note{border-right:4px solid var(--v6-turq);background:var(--v6-blue-soft);border-radius:13px;padding:11px 13px;color:#315e5c;font-size:12.5px;line-height:1.85}
+.v6Warning{border-right-color:var(--v6-amber);background:var(--v6-amber-soft);color:#6c511a}
+.v6Executive{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.v6SummaryList{margin:0;padding-right:20px;line-height:2;color:#45645e}
+.v6Timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.v6Week{border:1px solid #dce8e5;border-radius:16px;padding:14px;background:#fff}
+.v6Week b{display:block;color:#0d6867;font-size:15px;margin-bottom:7px}
+.v6Week p{margin:0;color:#526d67;font-size:13px;line-height:1.85}
+.v6Worksheet,.v6AnswerKey{border:1px solid #ccdeda;border-radius:18px;background:#fff;padding:22px;margin-top:18px;page-break-before:always;break-before:page}
+.v6Worksheet:first-child{page-break-before:auto;break-before:auto}
+.v6WorksheetHead{border-bottom:2px solid #d9e9e5;padding-bottom:12px;margin-bottom:14px}
+.v6WorksheetHead h3{margin:0;color:#0f6665}
+.v6WorksheetMeta{display:flex;gap:12px;flex-wrap:wrap;color:#5f7671;font-size:12px;font-weight:700;margin-top:7px}
+.v6Passage{background:#f6faf9;border:1px solid #dce8e5;border-radius:14px;padding:14px;line-height:2;font-size:14px;margin:12px 0}
+.v6Questions{margin:0;padding-right:24px;line-height:2.1;color:#314f49}
+.v6Questions li{padding:4px 0}
+.v6Options{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 3px;color:#59716b;font-size:12px}
+.v6Thinking{margin-top:15px;border-top:1px dashed #bdd2cd;padding-top:12px}
+.v6ScoreLine{display:flex;justify-content:space-between;gap:14px;margin-top:18px;padding-top:12px;border-top:1px solid #dce8e5;font-weight:800;color:#385d56}
+.v6AnswerKey h3{margin:0 0 12px;color:#1e664d}
+.v6AnswerTable{width:100%;border-collapse:collapse}
+.v6AnswerTable th,.v6AnswerTable td{border:1px solid #dbe6e3;padding:9px;font-size:12.5px;vertical-align:top}
+.v6AnswerTable th{background:#eef8f3;color:#245d48}
+.v6Editable[contenteditable="true"]{outline:0}
+.v6Editable[contenteditable="true"]:focus{box-shadow:0 0 0 3px #118f9515;border-radius:8px}
+.v6Toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.v6Empty{padding:18px;border:1px dashed #cbdad6;border-radius:15px;text-align:center;color:#667c77;background:#fbfdfc}
+.v6SubjectSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.v6SubjectCard{border:1px solid #dbe7e4;border-radius:16px;padding:14px;background:#fff}
+.v6SubjectCard h4{margin:0 0 10px;color:#4b4082}
+.v6MetricRows{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.v6MetricRows div{background:#f6faf9;border-radius:12px;padding:9px}
+.v6MetricRows b{display:block;color:#165c55}
+.v6MetricRows small{color:#6b7e79}
+@media(max-width:980px){.v6Kpis,.v6Cards,.v6PlanGrid,.v6Timeline,.v6SubjectSummary{grid-template-columns:1fr 1fr}.v6Executive{grid-template-columns:1fr}}
+@media(max-width:620px){.v6Kpis,.v6Cards,.v6PlanGrid,.v6Timeline,.v6SubjectSummary{grid-template-columns:1fr}.v6Worksheet,.v6AnswerKey{padding:15px}.v6ScoreLine{flex-direction:column}.reviewGate small{margin-right:0}}
+@media print{
+  @page{size:A4;margin:12mm}
+  .v6Section{box-shadow:none;border:0;padding:0;margin:0 0 12mm}
+  .v6Kpis,.v6Cards,.v6PlanGrid,.v6Timeline,.v6SubjectSummary{gap:7px}
+  .v6TableWrap{overflow:visible}
+  .v6Table{min-width:0;font-size:10px}
+  .v6Table th,.v6Table td{font-size:9.5px;padding:6px 4px}
+  .v6Worksheet,.v6AnswerKey{border:0;border-radius:0;margin:0;padding:0;min-height:255mm}
+  .v6Toolbar,.v6NoPrint{display:none!important}
+  .v6PageBreak{page-break-before:always;break-before:page}
+  .v6AvoidBreak{page-break-inside:avoid;break-inside:avoid}
+}
+/* ===== نهاية الإصدار ٦ ===== */
+.v6A4Page{border:1px solid #ccdeda;border-radius:18px;background:#fff;padding:22px;margin-top:18px;page-break-before:always;break-before:page}
+.v6SheetHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:2px solid #d9e9e5;padding-bottom:12px;margin-bottom:14px}
+.v6SheetHead small{display:block;color:#69807a;font-weight:800;margin-bottom:4px}.v6SheetHead h2{margin:0;color:#0f6665;font-size:22px}
+.v6SheetNo{display:grid;place-items:center;min-width:42px;height:42px;border-radius:50%;background:linear-gradient(145deg,var(--v6-turq-dark),var(--v6-turq));color:#fff;font-weight:900;font-size:18px}
+.v6SheetMeta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;color:#526e67;font-size:12.5px;margin-bottom:12px}
+.v6Objective{border-right:4px solid var(--v6-green);background:var(--v6-green-soft);border-radius:13px;padding:10px 12px;color:#285e49;line-height:1.8;margin-bottom:12px}
+.v6Subhead{font-size:15px;color:#155f5a;margin:15px 0 8px;padding-bottom:6px;border-bottom:1px solid #dce8e5}
+.v6Question{display:grid;grid-template-columns:28px 1fr;gap:7px;align-items:start;padding:7px 0;border-bottom:1px dotted #dce6e3;color:#2f4f49;line-height:1.8;font-size:13.5px}
+.v6Question:last-child{border-bottom:0}.v6Question>b{color:#0b6b67}.v6AnswerLine{height:20px;border-bottom:1px solid #b9cbc6;margin-top:4px}
+.v6Score{display:flex;justify-content:space-between;gap:12px;margin-top:18px;padding-top:12px;border-top:1px solid #dce8e5;color:#385d56;font-weight:800;font-size:13px}
+.v6AnswerKey .v6Table{min-width:760px}.v6ReportBody{padding:0 16px 16px}.v6WorksheetsIntro{page-break-before:always;break-before:page}
+.v6Shake{animation:v6Shake .45s linear}@keyframes v6Shake{0%,100%{transform:translateX(0)}25%{transform:translateX(7px)}50%{transform:translateX(-7px)}75%{transform:translateX(4px)}}
+@media(max-width:620px){.v6SheetMeta{grid-template-columns:1fr}.v6Score{flex-direction:column}.v6A4Page{padding:15px}}
+@media print{.v6A4Page{border:0;border-radius:0;margin:0;padding:0;min-height:255mm}.v6ReportBody{padding:0}.v6Question{font-size:11px;padding:4px 0}.v6AnswerLine{height:15px}.v6SheetHead h2{font-size:18px}.v6Score{font-size:11px}}
+#analysisSection #analysis,#analysisSection #charts{display:block}
+#analysisSection .v6Section:first-child{margin-top:0}
+.v6Profile{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 18px;background:#f4f9f7;border-bottom:1px solid #dbe7e3;color:#506e66;font-size:12.5px}
+.v6Profile span{border:1px solid #d8e5e1;border-radius:999px;background:#fff;padding:5px 10px}
+@media print{.v6Profile{padding:8px 0;background:#fff}.v6Profile span{padding:3px 7px}}
+
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap topin"><div class="brand"><div class="logo brandMark" role="img" aria-label="شعار ملتقى التعليم التفاعلي"></div><div><h1>قارئ ملفات نافس الذكي - الإصدار ٥٫١</h1><small>قراءة موجهة لقالب نافس ← تعبئة تلقائية ← مراجعة ← تحليل ← بطاقة نتائج</small></div></div><span class="pill">تعمل داخل المتصفح - لا تُرسل البيانات تلقائيًا لأي خادم</span></div></header>
+<header class="top"><div class="wrap topin"><div class="brand"><div class="logo brandMark" role="img" aria-label="شعار ملتقى التعليم التفاعلي"></div><div><h1>محلل نتائج نافس وخطة التحسين — الإصدار ٦٫٠</h1><small>قراءة موجهة ← مراجعة إلزامية ← لوحة مؤشرات ← خطة تحسين ← أوراق عمل وقياس أثر</small></div></div><span class="pill">تعمل داخل المتصفح - لا تُرسل البيانات تلقائيًا لأي خادم</span></div></header>
 <main>
-<section class="hero"><div class="wrap heroBox"><div><h2>ارفع بطاقة نافس واترك المنصة تبني التحليل</h2><p>تقرأ هذه النسخة قالب بطاقة نافس قراءة موجهة حسب مواضع عناصر البطاقة، وتتحقق من الأرقام قبل إدخالها. لا تحوّل القيمة غير المقروءة إلى صفر، وتفصل بين المتوسطات ونسب الإتقان والمستهدفات والمجالات الفرعية.</p></div><div class="heroIcon"><div class="heroLogo brandMark" role="img" aria-label="شعار ملتقى التعليم التفاعلي"></div></div></div></section>
+<section class="hero"><div class="wrap heroBox"><div><h2>حوّل نتائج نافس إلى لوحة مؤشرات وخطة تحسين قابلة للتنفيذ</h2><p>تقرأ المنصة بطاقة نافس الحالية قراءة موجهة، ثم تعرض كل قيمة للمراجعة قبل اعتمادها. بعد التأكيد تبني لوحة للمهارات والفجوات والأولويات، وخططًا للطلاب والمعلمين والأسرة والإدارة، وقياس أثر لمدة أربعة أسابيع، وأوراق عمل مع نماذج إجابة.</p></div><div class="heroIcon"><div class="heroLogo brandMark" role="img" aria-label="شعار ملتقى التعليم التفاعلي"></div></div></div></section>
 <section class="section" id="readerSection"><div class="wrap grid2">
-<div class="card"><div class="head"><div><h3>١. رفع ملف نافس</h3><p>PDF أو PNG أو JPG. صُممت القراءة الموجهة لبطاقات نافس الحالية، مع إبقاء جميع الحقول قابلة للتصحيح قبل الاعتماد.</p></div></div><div id="drop" class="drop"><strong>📥 اسحب الملف هنا أو اختره</strong><p>الأفضل أن تكون البطاقة واضحة وغير مقصوصة.</p><div class="btns" style="justify-content:center"><label class="btn primary" for="fileInput">اختيار ملف</label><input id="fileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" hidden><button id="demoBtn" class="btn secondary" type="button">تحميل بيانات افتراضية للتجربة</button></div></div><div id="readStatus" class="status">لم يتم اختيار ملف بعد.</div><div class="demoPrivacy">البيانات الافتراضية مخصصة لشرح الوظائف فقط، ولا تتضمن بيانات مستخدم أو مدرسة حقيقية.</div><div class="progress"><i id="progressBar"></i></div></div>
+<div class="card"><div class="head"><div><h3>١. رفع بطاقة أو تقرير نافس</h3><p>PDF أو PNG أو JPG. القراءة الآلية موجهة لتخطيط بطاقة نافس الحالية، وتبقى جميع الحقول قابلة للتصحيح قبل الاعتماد.</p></div></div><div id="drop" class="drop"><strong>📥 اسحب الملف هنا أو اختره</strong><p>الأفضل أن تكون البطاقة واضحة وغير مقصوصة.</p><div class="btns" style="justify-content:center"><label class="btn primary" for="fileInput">اختيار ملف</label><input id="fileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" hidden><button id="demoBtn" class="btn secondary" type="button">تحميل بيانات افتراضية للتجربة</button></div></div><div id="readStatus" class="status">لم يتم اختيار ملف بعد.</div><div class="demoPrivacy">البيانات الافتراضية مخصصة لشرح الوظائف فقط، ولا تتضمن بيانات مستخدم أو مدرسة حقيقية.</div><div class="progress"><i id="progressBar"></i></div></div>
 <div class="card"><div class="head"><div><h3>معاينة الملف</h3><p>ستظهر الصفحة التي يجري تحليلها هنا.</p></div></div><div id="preview" class="preview"><span style="color:#81938d">لا توجد معاينة بعد</span></div></div>
 </div></section>
 <section class="section hidden" id="editSection"><div class="wrap"><div class="card"><div class="head"><div><h3>٢. مراجعة البيانات المستخرجة</h3><p>هذه خطوة إلزامية لأن OCR قد يخطئ في رقم صغير داخل رسم بياني. صححي أي رقم قبل الاعتماد.</p></div><div class="btns"><button id="rerunOcr" class="btn secondary" type="button">إعادة القراءة</button><button id="toggleRaw" class="btn ghost" type="button">النص الخام</button></div></div><div class="notice">⚠️ لا تعتمد المنصة أي رقم مستخرج من الصورة مباشرةً. يتم عرض كل البيانات أولًا للمراجعة، ثم يستخدم التحليل القيم التي اعتمدتِها فقط.</div><div id="rawOcr" class="raw hidden" style="margin-top:12px"></div><div class="fields" style="margin-top:16px">
 <div class="field span2"><label>اسم المدرسة</label><input id="school" placeholder="اسم المدرسة"></div><div class="field"><label>الصف</label><select id="grade"><option value="g3">الثالث الابتدائي</option><option value="g6">السادس الابتدائي</option><option value="g9">الثالث المتوسط</option></select></div><div class="field"><label>العام الدراسي</label><input id="year" inputmode="numeric" value="2026"></div>
 <div class="field span2"><label>الإدارة / المنطقة</label><input id="region" placeholder="الإدارة العامة للتعليم..."></div><div class="field"><label>عدد الطلبة الإجمالي</label><input id="totalStudents" inputmode="decimal"></div><div class="field"><label>عدد المختبرين</label><input id="testedStudents" inputmode="decimal"></div><div class="field"><label>مقدار التغير</label><input id="change" inputmode="decimal" placeholder="مثال +1"></div><div class="field"><label>الجنس</label><select id="gender"><option value="غير محدد">غير محدد</option><option>بنات</option><option>بنين</option></select></div><div class="field"><label>نوع المدرسة</label><select id="schoolType"><option>حكومي</option><option>أهلي</option><option>عالمي</option></select></div><div class="field"><label>المرحلة</label><input id="stage" value="المرحلة الابتدائية"></div>
-</div><div class="head" style="margin-top:22px"><div><h3>بيانات المواد</h3><p>أضيفي أو احذفي مادة حسب البطاقة. المجالات الفرعية قابلة للتعديل.</p></div><button id="addSubject" class="btn secondary" type="button">＋ إضافة مادة</button></div><div id="subjects" class="subjects"></div><div class="btns" style="margin-top:17px"><button id="analyzeBtn" class="btn primary" type="button">✅ اعتماد وتحليل النتائج</button><button id="saveJson" class="btn secondary" type="button">حفظ البيانات JSON</button></div></div></div></section>
-<section class="section hidden" id="analysisSection"><div class="wrap"><div class="card"><div class="head"><div><h3>٣. التحليل والتحسينات</h3><p>تحقق حسابي، نقاط قوة وضعف، أولويات وتدخلات مقترحة.</p></div><button id="toReport" class="btn primary" type="button">إنشاء بطاقة النتيجة</button></div><div id="validation"></div><div id="analysis" class="analysisBox" style="margin-top:14px"></div><div id="charts" class="chartRow" style="margin-top:14px"></div></div></div></section>
-<section class="section hidden" id="reportSection"><div class="wrap"><div class="card"><div class="head noPrint"><div><h3>٤. بطاقة نافس الناتجة</h3><p>بطاقة مماثلة في الوظيفة للنموذج السابق، مع التحليل والتوصيات.</p></div><div class="btns"><button id="printBtn" class="btn primary">🖨️ حفظ PDF / طباعة</button><button id="backEdit" class="btn secondary">تعديل البيانات</button></div></div><div id="report"></div></div></div></section>
+</div><div class="head" style="margin-top:22px"><div><h3>بيانات المواد والمهارات</h3><p>أضيفي أو احذفي مادة حسب البطاقة. يمكن تعديل أسماء المهارات ونتائجها، وإدخال القيمة المرجعية فقط إذا كانت واردة رسميًا.</p></div><button id="addSubject" class="btn secondary" type="button">＋ إضافة مادة</button></div><div id="subjects" class="subjects"></div><div class="reviewGate"><label><input id="reviewConfirmed" type="checkbox"><span>أؤكد أنني راجعت اسم المدرسة والصف والأعداد وجميع النسب والمهارات والقيم المرجعية، وأنها مطابقة للملف المرفق.</span></label><small>لن تُبنى الفجوات أو الخطة قبل هذا التأكيد. أي قيمة غير مقروءة تبقى فارغة، ولا تُحوّل إلى صفر ولا تُستنتج من شكل الرسم.</small></div><div class="btns" style="margin-top:17px"><button id="analyzeBtn" class="btn primary" type="button">✅ اعتماد البيانات وبناء لوحة التحسين</button><button id="saveJson" class="btn secondary" type="button">حفظ البيانات JSON</button></div></div></div></section>
+<section class="section hidden" id="analysisSection"><div class="wrap"><div class="card"><div class="head"><div><h3>٣. لوحة المؤشرات وخطة التحسين</h3><p>فجوات موثقة، تفسير المهارات، أولويات، تدخلات متعددة الأطراف، قياس أثر، وأوراق عمل.</p></div><button id="toReport" class="btn primary" type="button">إنشاء الحزمة النهائية A4</button></div><div id="validation"></div><div id="analysis" class="analysisBox" style="margin-top:14px"></div><div id="charts" class="chartRow" style="margin-top:14px"></div><div id="v6Dashboard"></div><div id="v6Interpretation"></div><div id="v6Priorities"></div><div id="v6Plans"></div><div id="v6Impact"></div><div id="v6Timeline"></div><div id="v6Worksheets"></div></div></div></section>
+<section class="section hidden" id="reportSection"><div class="wrap"><div class="card"><div class="head noPrint"><div><h3>٤. الحزمة النهائية للتحليل والتحسين</h3><p>لوحة المؤشرات، الملخص التنفيذي، الخطط، قياس الأثر، وأوراق العمل مع نماذج الإجابة.</p></div><div class="btns"><button id="printBtn" class="btn primary" type="button">🖨️ حفظ PDF / طباعة A4</button><button id="backEdit" class="btn secondary">تعديل البيانات</button></div></div><div id="report"></div></div></div></section>
 </main>
 
 <footer class="siteFooter noPrint">
@@ -720,6 +843,444 @@ smartExtract=async function(canvas){
 /* ===== نهاية الإصدار ٥ ===== */
 
 $('#fileInput').onchange=e=>handleFile(e.target.files[0]);const drop=$('#drop');['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));$('#demoBtn').onclick=demo;$('#rerunOcr').onclick=()=>currentFile&&readCurrent();$('#toggleRaw').onclick=()=>$('#rawOcr').classList.toggle('hidden');$('#grade').onchange=()=>{if(confirm('هل تريدين إعادة تهيئة المواد المناسبة للصف؟'))initSubjects();$('#stage').value=$('#grade').value==='g9'?'المرحلة المتوسطة':'المرحلة الابتدائية'};$('#addSubject').onclick=()=>{subjects.push(makeSubject('الرياضيات'));renderSubjects()};$('#analyzeBtn').onclick=()=>{const d=capture(),a=analyzeData(d);renderAnalysis(d,a)};$('#toReport').onclick=()=>buildReport(capture());$('#printBtn').onclick=()=>window.print();$('#backEdit').onclick=()=>$('#editSection').scrollIntoView({behavior:'smooth'});$('#saveJson').onclick=()=>{const blob=new Blob([JSON.stringify(capture(),null,2)],{type:'application/json;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nafes-data.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
+/* ===== محلل نتائج نافس وخطة التحسين - الإصدار ٦ ===== */
+const v6Digits='٠١٢٣٤٥٦٧٨٩';
+function v6Has(v){return !(v===''||v===null||v===undefined||Number.isNaN(Number(v)))}
+function v6NumberValue(v){return v6Has(v)&&Number.isFinite(Number(v))?Number(v):null}
+function v6Ar(value){return String(value??'').replace(/\d/g,d=>v6Digits[Number(d)])}
+function v6ArText(value){return v6Ar(value).replace(/([٠-٩])\.([٠-٩])/g,'$1٫$2')}
+function v6Round(v,d=1){const p=10**d;return Math.round(Number(v)*p)/p}
+function v6Num(v,d=1){if(!v6Has(v))return'—';const n=v6Round(v,d),raw=String(n).replace('.', '٫');return v6Ar(raw)}
+function v6Pct(v,d=1){return v6Has(v)?v6Num(v,d)+'٪':'—'}
+function v6Signed(v,d=1){if(!v6Has(v))return'—';const n=v6Round(v,d);return(n>0?'+':n<0?'−':'')+v6Num(Math.abs(n),d)}
+function v6GapText(v){if(!v6Has(v))return'—';const n=v6Round(v,1);if(n>0)return`أعلى بـ${v6Num(n)} نقطة`;if(n<0)return`أقل بـ${v6Num(Math.abs(n))} نقطة`;return'مطابق للمرجع'}
+function v6Norm(s){return String(s||'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[ـًٌٍَُِّْ]/g,'').replace(/[^\u0600-\u06FF0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
+function v6Key(s){return v6Norm(s).replace(/\s/g,'')}
+function v6GradeName(g){return gradeLabel(g)}
+function v6StatusMeta(status){
+  if(status==='strength')return{label:'🟢 نقطة قوة',cls:'strength'};
+  if(status==='urgent')return{label:'🔴 أولوية عاجلة',cls:'urgent'};
+  if(status==='improve')return{label:'🟡 تحتاج تحسينًا',cls:'improve'};
+  return{label:'⚪ لا تتوفر بيانات كافية',cls:'nodata'};
+}
+function v6StatusTag(status){const m=v6StatusMeta(status);return`<span class="v6Tag ${m.cls}">${m.label}</span>`}
+function v6SkillInfo(name,subject){
+  const n=v6Key(name),s=v6Key(subject);
+  if(n.includes('استيعابالمقروء'))return{measure:'فهم النص، واستخراج المعلومات الصريحة والضمنية، وربط الأفكار والاستنتاج.',focus:'تحديد نوع السؤال الذي تعثر فيه الطلبة: معلومة مباشرة، استنتاج، فكرة رئيسة، تسلسل، أو علاقة سبب ونتيجة.',preserve:'استمرار القراءة الموجهة، ومناقشة الأدلة من النص، وتنويع النصوص والأسئلة.'};
+  if(n.includes('دلالاتالالفاظ')||n.includes('دلالاتالألفاظ'))return{measure:'فهم معنى الكلمة أو التركيب من السياق، والتمييز بين المرادف والضد والاستخدام المناسب.',focus:'تحليل أخطاء فهم المفردات في السياق، لا الاكتفاء بحفظ المعنى المنفصل.',preserve:'المحافظة على أنشطة المفردات السياقية، وشبكات المعنى، واستخدام الكلمة في جملة.'};
+  if(n.includes('الاعدادوالعمليات')||n.includes('الأعدادوالعمليات'))return{measure:'فهم الأعداد وتمثيلها، وإجراء العمليات، واختيار الاستراتيجية المناسبة والتحقق من معقولية الناتج.',focus:'تحديد ما إذا كان الاحتياج في المفهوم العددي، أو الإجراء الحسابي، أو فهم المسألة اللفظية.',preserve:'الاستمرار في تنويع الاستراتيجيات، والحساب الذهني، وتفسير خطوات الحل.'};
+  if(n.includes('الهندسهوالقياس')||n.includes('الهندسةوالقياس'))return{measure:'فهم الأشكال والعلاقات المكانية، واستخدام وحدات القياس والقوانين في مواقف تطبيقية.',focus:'تشخيص التمييز بين المفاهيم والقوانين والوحدات، ثم ربطها برسوم ومواقف واقعية.',preserve:'المحافظة على النمذجة البصرية، والقياس العملي، وتبرير اختيار القانون والوحدة.'};
+  if(n.includes('الجبر'))return{measure:'اكتشاف الأنماط والعلاقات، واستخدام الرموز والتعبيرات والمعادلات لتمثيل المواقف وحلها.',focus:'تحديد الصعوبة بين فهم الرمز، وبناء العلاقة، وتنفيذ خطوات الحل، والتحقق من الناتج.',preserve:'استمرار استخدام الجداول والنماذج والتمثيلات المتعددة مع تفسير العلاقة.'};
+  if(n.includes('البياناتوالاحتمالات')||n.includes('البياناتوالاحتمال'))return{measure:'قراءة البيانات وتمثيلها وتفسيرها، وحساب المقاييس المناسبة، وتقدير الاحتمالات.',focus:'تشخيص قراءة المحاور والمفاتيح، واختيار المقياس الإحصائي، وتفسير الاحتمال في السياق.',preserve:'المحافظة على جمع بيانات حقيقية، وتمثيلها، ومناقشة الاستنتاجات ومدى صحتها.'};
+  if(n.includes('علومالحياه')||n.includes('علومالحياة'))return{measure:'فهم الكائنات الحية ووظائفها وتفاعلها مع البيئة والأنظمة الحيوية.',focus:'تحديد المفاهيم المتشابهة، وربط البنية بالوظيفة، وتفسير العلاقات في الأنظمة الحية.',preserve:'استمرار الملاحظة والاستقصاء والنماذج والربط بأمثلة من البيئة المحلية.'};
+  if(n.includes('العلومالفيزيائيه')||n.includes('العلومالفيزيائية'))return{measure:'فهم المادة والطاقة والقوى والحركة والتغيرات الفيزيائية وتطبيقها في مواقف علمية.',focus:'تشخيص الخلط بين المفاهيم، وقراءة الرسوم، وتفسير السبب والنتيجة في الظواهر الفيزيائية.',preserve:'المحافظة على التجارب الآمنة، والتنبؤ قبل التجربة، وتفسير النتائج بالأدلة.'};
+  if(n.includes('علومالارضوالفضاء')||n.includes('علومالأرضوالفضاء'))return{measure:'فهم مكونات الأرض والطقس والمناخ والنظام الشمسي والعمليات التي تغير سطح الأرض.',focus:'تحديد صعوبة التسلسل الزمني، وقراءة النماذج والخرائط، وربط الظاهرة بأسبابها وآثارها.',preserve:'استمرار استخدام النماذج والخرائط والبيانات الجوية والمقارنات الزمنية.'};
+  if(s.includes('قراءه')||s.includes('قراءة'))return{measure:`يقيس الأداء في مهام القراءة المرتبطة بـ «${name}» كما وردت في البطاقة.`,focus:'تفصيل المجال إلى مؤشرات أداء صغيرة، ثم إجراء تشخيص إضافي لكل مؤشر.',preserve:'تثبيت الممارسات القرائية التي دعمت الأداء ومتابعتها بقياس تكويني.'};
+  if(s.includes('رياضيات'))return{measure:`يقيس الأداء الرياضي في «${name}» وفق التسمية الواردة في البطاقة.`,focus:'تحليل الخطأ إلى فهم مفهوم، أو إجراء، أو تمثيل، أو تطبيق في مسألة.',preserve:'تثبيت التمثيلات المتعددة والتبرير والتحقق من الحل.'};
+  if(s.includes('علوم'))return{measure:`يقيس الفهم العلمي والاستدلال في «${name}» كما ورد في البطاقة.`,focus:'تحديد المفاهيم الفرعية ونوع الاستدلال الذي يحتاج إلى تشخيص إضافي.',preserve:'تثبيت الاستقصاء واستخدام الأدلة العلمية في التفسير.'};
+  return{measure:`يقيس أداء الطلبة في «${name}» وفق ما ورد في الملف.`,focus:'يحتاج إلى تشخيص إضافي لتحديد المؤشرات الفرعية ونوع الخطأ.',preserve:'المحافظة على الممارسات التي دعمت الأداء ومراقبة ثباته.'};
+}
+
+renderSubjects=function(){
+  const box=$('#subjects');
+  box.innerHTML=subjects.map((s,si)=>`<article class="subject" data-si="${si}">
+    <div class="subjectTop"><h4>${esc(s.name)}</h4><div class="btns"><button class="btn ghost subChange" type="button">تغيير المادة</button><button class="btn danger subDelete" type="button">حذف</button></div></div>
+    <div class="fields">
+      <div class="field"><label>منخفض جدًا ٪</label><input inputmode="decimal" data-k="veryLow" value="${s.veryLow}"></div>
+      <div class="field"><label>منخفض ٪</label><input inputmode="decimal" data-k="low" value="${s.low}"></div>
+      <div class="field"><label>متوسط ٪</label><input inputmode="decimal" data-k="medium" value="${s.medium}"></div>
+      <div class="field"><label>مرتفع ٪</label><input inputmode="decimal" data-k="high" value="${s.high}"></div>
+      <div class="field"><label>متوسط المدرسة</label><input inputmode="decimal" data-k="schoolAvg" value="${s.schoolAvg}"></div>
+      <div class="field"><label>متوسط إدارة التعليم</label><input inputmode="decimal" data-k="adminAvg" value="${s.adminAvg}"></div>
+      <div class="field"><label>متوسط المملكة</label><input inputmode="decimal" data-k="kingdomAvg" value="${s.kingdomAvg}"></div>
+      <div class="field"><label>نسبة اجتياز الحد الأدنى</label><input inputmode="decimal" data-k="mastery" value="${s.mastery}"></div>
+      <div class="field"><label>المستهدف الحالي (إن ورد)</label><input inputmode="decimal" data-k="target" value="${s.target}"></div>
+      <div class="field"><label>المستهدف طويل المدى (إن ورد)</label><input inputmode="decimal" data-k="target2030" value="${s.target2030}"></div>
+    </div>
+    <div class="subjectTop" style="margin-top:15px"><div><h4 style="font-size:15px">المهارات أو المجالات الفرعية</h4><small style="color:#6b807a">أدخلي القيمة المرجعية فقط إذا كانت ظاهرة رسميًا في التقرير.</small></div><button class="btn secondary addDomain" type="button">＋ مهارة/مجال</button></div>
+    <div class="domainRows">${(s.domains||[]).map((d,di)=>`<div class="domainRow" data-di="${di}">
+      <div class="field"><label>اسم المهارة/المجال</label><input data-dk="name" value="${esc(d.name)}"></div>
+      <div class="field"><label>نتيجة المدرسة ٪</label><input inputmode="decimal" data-dk="value" value="${d.value}"></div>
+      <div class="field"><label>القيمة المرجعية ٪</label><input inputmode="decimal" data-dk="benchmark" value="${v6Has(d.benchmark)?d.benchmark:''}" placeholder="إن وردت فقط"></div>
+      <button class="btn danger delDomain" type="button" aria-label="حذف المهارة">×</button>
+    </div>`).join('')}</div>
+  </article>`).join('');
+  box.querySelectorAll('.subject').forEach(el=>{
+    const si=+el.dataset.si;
+    el.querySelectorAll('[data-k]').forEach(inp=>inp.oninput=()=>subjects[si][inp.dataset.k]=inp.value.trim()===''?'':num(inp.value));
+    el.querySelector('.subDelete').onclick=()=>{subjects.splice(si,1);renderSubjects()};
+    el.querySelector('.subChange').onclick=()=>{const n=prompt('اسم المادة: الرياضيات / القراءة / العلوم',subjects[si].name);if(!n)return;subjects[si].name=n;subjects[si].domains=domainTemplate($('#grade').value,n).map(x=>({name:x,value:'',benchmark:''}));renderSubjects()};
+    el.querySelector('.addDomain').onclick=()=>{subjects[si].domains.push({name:'مهارة جديدة',value:'',benchmark:''});renderSubjects()};
+    el.querySelectorAll('.domainRow').forEach(row=>{
+      const di=+row.dataset.di;
+      row.querySelectorAll('[data-dk]').forEach(inp=>inp.oninput=()=>subjects[si].domains[di][inp.dataset.dk]=inp.dataset.dk==='name'?inp.value:(inp.value.trim()===''?'':num(inp.value)));
+      row.querySelector('.delDomain').onclick=()=>{subjects[si].domains.splice(di,1);renderSubjects()};
+    });
+  });
+};
+
+function v6BuildUnits(d){
+  const units=[];
+  (d.subjects||[]).forEach((s,si)=>{
+    const ds=(s.domains||[]);
+    if(ds.length){
+      ds.forEach((x,di)=>{
+        const value=v6NumberValue(x.value),benchmark=v6NumberValue(x.benchmark);
+        units.push({key:`${si}-${di}`,subject:s.name,name:x.name||`مهارة ${di+1}`,value,benchmark,gap:value!==null&&benchmark!==null?v6Round(value-benchmark,1):null,source:'domain',subjectData:s});
+      });
+    }else{
+      const value=v6NumberValue(s.schoolAvg),benchmark=v6NumberValue(s.kingdomAvg)??v6NumberValue(s.adminAvg);
+      units.push({key:`${si}-overall`,subject:s.name,name:'المؤشر العام للمادة',value,benchmark,gap:value!==null&&benchmark!==null?v6Round(value-benchmark,1):null,source:'overall',subjectData:s});
+    }
+  });
+  const negatives=units.filter(u=>u.gap!==null&&u.gap<0).sort((a,b)=>a.gap-b.gap);
+  const urgentKeys=new Set(negatives.slice(0,Math.min(3,negatives.length)).map(u=>u.key));
+  units.forEach(u=>{
+    if(u.value===null)u.status='nodata';
+    else if(u.benchmark===null)u.status='nodata';
+    else if(u.gap>=0)u.status='strength';
+    else if(urgentKeys.has(u.key))u.status='urgent';
+    else u.status='improve';
+  });
+  return units;
+}
+function v6Analyze(d){
+  const units=v6BuildUnits(d),withData=units.filter(u=>u.value!==null),withRef=units.filter(u=>u.value!==null&&u.benchmark!==null);
+  const negatives=units.filter(u=>u.gap!==null&&u.gap<0).sort((a,b)=>a.gap-b.gap);
+  const positives=units.filter(u=>u.gap!==null&&u.gap>=0).sort((a,b)=>b.gap-a.gap);
+  const rawDesc=[...withData].sort((a,b)=>b.value-a.value),rawAsc=[...withData].sort((a,b)=>a.value-b.value);
+  const strongest=rawDesc.slice(0,3);
+  const weakest=rawAsc.slice(0,3);
+  const diagnostic=negatives.length?[]:rawAsc.filter(u=>u.benchmark===null).slice(0,3);
+  const actionUnits=negatives.length?negatives:diagnostic;
+  const priorities=(negatives.length?negatives:rawAsc).slice(0,3);
+  const validation=[];
+  if(d.total&&d.tested&&Number(d.tested)>Number(d.total))validation.push('عدد المختبرين أكبر من عدد الطلبة الإجمالي؛ يجب مراجعة الرقمين.');
+  (d.subjects||[]).forEach(s=>{
+    const lv=[s.veryLow,s.low,s.medium,s.high];
+    if(lv.every(v6Has)){const sum=lv.reduce((a,b)=>a+Number(b),0);if(Math.abs(sum-100)>1)validation.push(`${s.name}: مجموع مستويات الأداء ${v6Pct(sum)} وليس قريبًا من ١٠٠٪.`)}
+  });
+  if(!withData.length)validation.push('لم تُسجل نتائج للمهارات أو المجالات الفرعية؛ لا يمكن بناء أولويات أو أوراق عمل قبل إدخال النتائج.');
+  const noRef=withData.filter(u=>u.benchmark===null);
+  return{units,withData,withRef,negatives,positives,strongest,weakest,diagnostic,actionUnits,priorities,largestGap:negatives[0]||null,noRef,validation};
+}
+function v6UnitLabel(u){return`${u.subject} — ${u.name}`}
+function v6RankMap(a){const m=new Map();a.priorities.forEach((u,i)=>m.set(u.key,i+1));return m}
+function v6DashboardHtml(d,a){
+  const rank=v6RankMap(a);
+  return`<section class="v6Section v6AvoidBreak">
+    <div class="v6SectionTitle"><div><h3>📊 لوحة المؤشرات</h3><p>التصنيف يعتمد على القيمة المرجعية المدخلة من التقرير فقط. عند غيابها تظهر الحالة «لا تتوفر بيانات كافية»، ولا تُنشأ فجوة افتراضية.</p></div></div>
+    <div class="v6Kpis">
+      <div class="v6Kpi"><b>${v6Ar(a.units.length)}</b><small>المهارات/المجالات المسجلة</small></div>
+      <div class="v6Kpi good"><b>${v6Ar(a.withRef.length)}</b><small>مؤشرات لها قيمة مرجعية</small></div>
+      <div class="v6Kpi alert"><b>${v6Ar(a.negatives.length)}</b><small>فجوات سالبة فعلية</small></div>
+      <div class="v6Kpi warn"><b>${v6Ar(a.noRef.length)}</b><small>نتائج بلا مرجع للمقارنة</small></div>
+    </div>
+    <div class="v6TableWrap" style="margin-top:14px"><table class="v6Table"><thead><tr><th>المادة</th><th>المهارة/المجال</th><th>نتيجة المدرسة</th><th>القيمة المرجعية</th><th>مقدار الفجوة</th><th>مستوى الأداء</th><th>الأولوية</th></tr></thead><tbody>
+      ${a.units.map(u=>`<tr><td>${esc(u.subject)}</td><td>${esc(u.name)}</td><td>${v6Pct(u.value)}</td><td>${v6Pct(u.benchmark)}</td><td>${v6GapText(u.gap)}</td><td>${v6StatusTag(u.status)}</td><td>${rank.has(u.key)?(u.gap===null?'تشخيصية ':'')+v6Ar(rank.get(u.key)):'—'}</td></tr>`).join('')||'<tr><td colspan="7">لا توجد بيانات.</td></tr>'}
+    </tbody></table></div>
+    <div class="v6Note v6Warning" style="margin-top:12px">عند غياب القيمة المرجعية يمكن ترتيب النتائج وصفيًا فقط، لكن لا يجوز وصفها بالضعف أو تحديد فجوة رقمية. لذلك يُكتب: «يحتاج إلى تشخيص إضافي».</div>
+  </section>`;
+}
+function v6InterpretationsHtml(d,a){
+  return`<section class="v6Section"><div class="v6SectionTitle"><div><h3>🔍 تفسير كل مهارة أو مجال</h3><p>تفسير وصفي للنتيجة، مع فصل البيانات الفعلية عن الاحتمالات التي تحتاج إلى تشخيص.</p></div></div>
+    <div class="v6Cards">${a.units.map(u=>{const info=v6SkillInfo(u.name,u.subject);let comparison='لا توجد قيمة مرجعية في البيانات المدخلة.';if(u.gap!==null)comparison=u.gap>=0?`أعلى من القيمة المرجعية بمقدار ${v6Num(Math.abs(u.gap))} نقطة.`:`أقل من القيمة المرجعية بمقدار ${v6Num(Math.abs(u.gap))} نقطة.`;let treatment=u.gap!==null&&u.gap<0?info.focus:(u.gap!==null?info.preserve:'يحتاج إلى تشخيص إضافي قبل تحديد جانب الضعف أو سببه.');return`<article class="v6Card"><h4>${esc(v6UnitLabel(u))}</h4><p><strong>ماذا تقيس؟</strong> ${esc(info.measure)}</p><p><strong>نتيجة المدرسة:</strong> ${v6Pct(u.value)}.</p><p><strong>المقارنة:</strong> ${esc(comparison)}</p><p><strong>الفجوة الفعلية:</strong> ${u.gap===null?'غير متاحة':v6GapText(u.gap)}.</p><p><strong>جانب المعالجة:</strong> ${esc(treatment)}</p><p><strong>ما يحافظ عليه:</strong> ${esc(info.preserve)}</p></article>`}).join('')||'<div class="v6Empty">لا توجد مهارات مضافة.</div>'}</div>
+  </section>`;
+}
+function v6PrioritiesHtml(a){
+  return`<section class="v6Section v6AvoidBreak"><div class="v6SectionTitle"><div><h3>🎯 الأولويات</h3><p>${a.negatives.length?'مرتبة وفق أكبر الفجوات السالبة الفعلية.':'ترتيب تشخيصي بحسب أقل النتائج المتاحة؛ لا يُعد حكمًا بوجود ضعف لغياب مرجع كافٍ.'}</p></div></div>
+    <div class="v6Cards">${a.priorities.map((u,i)=>{const reason=u.gap!==null?`الفجوة بين نتيجة المدرسة والمرجع تبلغ ${v6Num(Math.abs(u.gap))} نقطة.`:`النتيجة ${v6Pct(u.value)} وهي من أقل النتائج المسجلة، لكن يلزم مرجع رسمي أو اختبار تشخيصي للحكم.`;return`<article class="v6Card v6Priority" data-rank="الأولوية ${v6Ar(i+1)}"><h4>${esc(v6UnitLabel(u))}</h4><p>${esc(reason)}</p><p><strong>القرار:</strong> ${u.gap!==null?'بدء تدخل موجه وقياس أثر.':'تنفيذ تشخيص إضافي أولًا، ثم تقرير نوع التدخل.'}</p></article>`}).join('')||'<div class="v6Empty">لا يمكن تحديد أولويات قبل إدخال نتائج.</div>'}</div>
+  </section>`;
+}
+function v6StudentActions(u,diagnostic){
+  const target=u.benchmark!==null?`الاقتراب من القيمة المرجعية ${v6Pct(u.benchmark)} أو تجاوزها`:'تحديد خط أساس دقيق ثم اعتماد مستهدف موثق';
+  return[
+    `اختبار تشخيصي قصير في «${u.name}» يحدد نوع السؤال ومؤشر الأداء الذي يحتاج دعمًا.`,
+    `ورقة عمل متدرجة من الفهم المباشر إلى التطبيق في «${u.name}».`,
+    `مجموعات دعم مرنة وفق نمط الخطأ، لا وفق وصف عام للطلبة.`,
+    `تدريب أسبوعي قصير بأسئلة محاكية لطبيعة المهارة مع تغذية راجعة فورية.`,
+    `نشاط إثرائي للطلاب المتقنين يطلب تفسير الحل أو بناء سؤال جديد.`,
+    `قياس قبلي وبعدي موحد، والهدف الإجرائي: ${target}.`
+  ];
+}
+function v6TeacherActions(u){return[
+  `ورشة مصغرة لبناء أسئلة تقيس «${u.name}» وتدرجها معرفيًا.`,
+  `مجتمع تعلم مهني لتحليل استجابات الطلبة والأخطاء الشائعة في المهارة نفسها.`,
+  `زيارة صفية تبادلية تركز على استراتيجية تدريس واحدة مرتبطة بـ «${u.name}».`,
+  `إعداد بنك أسئلة قصير مع محك تصحيح واضح، ثم مراجعته جماعيًا.`,
+  `اختبار قصير بعد التدخل ومقارنة النتائج بالقياس القبلي والقيمة المرجعية إن توفرت.`
+]}
+function v6FamilyActions(u){return[
+  `نشاط منزلي قصير لمدة عشر دقائق مرتبط بـ «${u.name}» دون تحميل الأسرة دور التدريس الكامل.`,
+  `متابعة أسبوعية لورقة واحدة وتوقيعها بعد مناقشة المحاولة مع الطالب/ة.`,
+  `طرح سؤالين منزليين تطبيقيين وإرسال الملاحظة للمدرسة عند استمرار الصعوبة.`,
+  `رسالة توعوية: المطلوب هو التشجيع والانتظام، لا إعطاء الإجابة مباشرة.`
+]}
+function v6List(items){return`<ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`}
+function v6PlansHtml(d,a){
+  const adminRows=[];
+  const bodies=a.actionUnits.map((u,i)=>{
+    const diagnostic=u.gap===null;
+    adminRows.push(`<tr><td>${v6Ar(i+1)} — ${esc(v6UnitLabel(u))}</td><td>${diagnostic?'تشخيص تفصيلي ثم اعتماد التدخل':'اختبار قبلي، تدخل موجه، تدريب، قياس بعدي'}</td><td>معلم المادة · منسق التحصيل · القيادة المدرسية</td><td>الأسابيع ${v6Ar('1–4')}</td><td>اختبار قصير + سجل تقدم + مقارنة قبل/بعد</td><td>نموذج التشخيص · أوراق العمل · سجل الدعم · محضر مجتمع التعلم</td><td>يُستكمل بعد التنفيذ والقياس البعدي</td></tr>`);
+    return`<div class="v6UnitHeader"><div><h4>${esc(v6UnitLabel(u))}</h4><small>${diagnostic?'أولوية تشخيصية لغياب المرجع':'فجوة فعلية: '+v6Num(Math.abs(u.gap))+' نقطة'}</small></div>${v6StatusTag(u.status)}</div><div class="v6PlanGrid"><div class="v6PlanBox"><h4>👩‍🎓 خطة الطلاب</h4>${v6List(v6StudentActions(u,diagnostic))}</div><div class="v6PlanBox"><h4>👩‍🏫 تطوير المعلمين والمعلمات</h4>${v6List(v6TeacherActions(u))}</div><div class="v6PlanBox"><h4>👨‍👩‍👧 دور الأسرة</h4>${v6List(v6FamilyActions(u))}</div></div>`;
+  }).join('');
+  return`<section class="v6Section"><div class="v6SectionTitle"><div><h3>🛠️ خطة التحسين العملية</h3><p>كل إجراء مرتبط بمهارة محددة، ولا ينسب سبب الضعف إلى الطالب أو المعلم أو الأسرة دون دليل.</p></div></div>${bodies||'<div class="v6Empty">لا توجد فجوات موثقة. أدخلي قيمة مرجعية أو نفذي تشخيصًا إضافيًا للنتائج الأقل.</div>'}
+    <div class="v6SectionTitle" style="margin-top:20px"><div><h4>🏫 جدول متابعة الإدارة المدرسية</h4></div></div>
+    <div class="v6TableWrap"><table class="v6Table"><thead><tr><th>الأولوية</th><th>الإجراء</th><th>المسؤول</th><th>زمن التنفيذ</th><th>أداة القياس</th><th>الشاهد</th><th>النتيجة بعد التنفيذ</th></tr></thead><tbody>${adminRows.join('')||'<tr><td colspan="7">يُستكمل بعد تحديد الأولويات.</td></tr>'}</tbody></table></div>
+  </section>`;
+}
+function v6ImpactHtml(a){
+  return`<section class="v6Section v6AvoidBreak"><div class="v6SectionTitle"><div><h3>📈 قياس الأثر</h3><p>لا تُسجل نتيجة بعدية أو مقدار تحسن قبل تنفيذ القياس فعليًا.</p></div></div><div class="v6TableWrap"><table class="v6Table"><thead><tr><th>المهارة</th><th>القياس القبلي</th><th>التدخل</th><th>القياس البعدي</th><th>مقدار التحسن</th><th>القرار التالي</th></tr></thead><tbody>${a.actionUnits.map(u=>`<tr><td>${esc(v6UnitLabel(u))}</td><td>${u.value!==null?'نتيجة التقرير: '+v6Pct(u.value)+'، ويُدعّم باختبار تشخيصي.':'اختبار تشخيصي أولي مطلوب.'}</td><td>تدريس مركز + تدريب متدرج + تغذية راجعة + متابعة أسبوعية</td><td>لا تُسجل قبل التنفيذ</td><td>يُحسب لاحقًا: البعدي − القبلي</td><td>${u.benchmark!==null?'إذا بلغ المرجع أو تجاوزه تُثبت الممارسة؛ وإلا يُعدّل التدخل.':'يُحدد المستهدف والقرار بعد التشخيص.'}</td></tr>`).join('')||'<tr><td colspan="6">لا توجد مهارات محددة للقياس بعد.</td></tr>'}</tbody></table></div></section>`;
+}
+function v6TimelineHtml(a){return`<section class="v6Section v6AvoidBreak"><div class="v6SectionTitle"><div><h3>📅 الخطة الزمنية لمدة ٤ أسابيع</h3><p>تُطبق على الأولويات المحددة، مع توثيق الشواهد في كل أسبوع.</p></div></div><div class="v6Timeline"><div class="v6Week"><b>الأسبوع الأول</b><p>اختبار تشخيصي، تحليل بنود واستجابات، تحديد المجموعات، واعتماد خط الأساس.</p></div><div class="v6Week"><b>الأسبوع الثاني</b><p>تدخل وتعليم مركز للمهارة، مع نمذجة الحل وتغذية راجعة مباشرة.</p></div><div class="v6Week"><b>الأسبوع الثالث</b><p>تدريب وتطبيق بأسئلة متدرجة ومحاكية، ومتابعة فردية وإثراء للمتقنين.</p></div><div class="v6Week"><b>الأسبوع الرابع</b><p>قياس بعدي، حساب التحسن، مقارنة المرجع، وتحديد قرار الاستمرار أو تعديل التدخل.</p></div></div></section>`}
+function v6ItemText(u,mode='strong'){
+  if(u.gap!==null)return`${v6UnitLabel(u)}: ${v6Pct(u.value)}، و${v6GapText(u.gap)}.`;
+  return`${v6UnitLabel(u)}: ${v6Pct(u.value)}؛ ترتيب وصفي لغياب المرجع.`;
+}
+function v6ExecutiveHtml(d,a){
+  const urgent=a.priorities[0];
+  return`<section class="v6Section v6AvoidBreak"><div class="v6SectionTitle"><div><h3>✨ الملخص التنفيذي</h3><p>ملخص من صفحة واحدة للقيادة المدرسية وفريق التحسين.</p></div></div><div class="v6Executive"><div class="v6Card"><h4>أبرز النتائج</h4><p><strong>أقوى ٣ مهارات/مجالات:</strong></p><ol class="v6SummaryList">${a.strongest.map(u=>`<li>${esc(v6ItemText(u,'strong'))}</li>`).join('')||'<li>لا تتوفر بيانات كافية.</li>'}</ol><p><strong>أضعف ٣ مهارات/مجالات:</strong></p><ol class="v6SummaryList">${a.weakest.map(u=>`<li>${esc(v6ItemText(u,'weak'))}</li>`).join('')||'<li>لا تتوفر بيانات كافية.</li>'}</ol></div><div class="v6Card"><h4>قرار التحسين</h4><p><strong>أكبر فجوة:</strong> ${a.largestGap?esc(v6UnitLabel(a.largestGap))+' بمقدار '+v6Num(Math.abs(a.largestGap.gap))+' نقطة':'غير متاحة لعدم وجود فجوة مرجعية سالبة'}.</p><p><strong>أهم ٣ أولويات:</strong> ${a.priorities.length?a.priorities.map((u,i)=>`${v6Ar(i+1)}- ${esc(v6UnitLabel(u))}`).join(' · '):'غير محددة'}.</p><p><strong>الإجراء العاجل:</strong> ${urgent?(urgent.gap===null?'اختبار تشخيصي قصير قبل الحكم على الضعف.':'بدء اختبار قبلي وتدخل موجه في '+esc(urgent.name)+'.'):'إكمال البيانات أولًا'}</p><p><strong>المسؤول:</strong> معلم المادة، منسق التحصيل الدراسي، والقيادة المدرسية.</p><p><strong>موعد قياس الأثر:</strong> نهاية الأسبوع الرابع من بدء الخطة.</p></div></div>${a.validation.length?`<div class="notice" style="margin-top:12px"><b>تحقق مطلوب:</b><ul>${a.validation.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}</section>`;
+}
+function v6SubjectSummaryHtml(d){return`<section class="v6Section v6AvoidBreak"><div class="v6SectionTitle"><div><h3>📚 ملخص المواد</h3><p>جميع القيم مأخوذة من الحقول التي تمت مراجعتها واعتمادها.</p></div></div><div class="v6SubjectSummary">${(d.subjects||[]).map(s=>`<article class="v6SubjectCard"><h4>${esc(s.name)}</h4><div class="v6MetricRows"><div><b>${v6Num(s.schoolAvg)}</b><small>متوسط المدرسة</small></div><div><b>${v6Num(s.kingdomAvg)}</b><small>متوسط المملكة</small></div><div><b>${v6Pct(s.mastery)}</b><small>اجتياز الحد الأدنى</small></div><div><b>${v6Pct(s.target)}</b><small>المستهدف الحالي</small></div></div></article>`).join('')||'<div class="v6Empty">لا توجد مواد.</div>'}</div></section>`}
+
+function v6Q(q,answer,explanation='',options=[]){return{q,answer,explanation,options}}
+function v6ReadingPassage(grade){
+  if(grade==='g3')return'زرع خالد شتلة صغيرة في حديقة المدرسة. كان يسقيها كل صباح، ويبعد عنها الأوراق اليابسة. بعد أسابيع نمت الشتلة وأزهرت، ففرح خالد لأن العناية اليومية صنعت فرقًا كبيرًا.';
+  if(grade==='g6')return'أطلقت المدرسة مبادرة لترشيد استهلاك الماء. بدأ الطلاب بتسجيل كمية الماء المستخدمة يوميًا، ثم وضعوا ملصقات قرب الصنابير وأبلغوا عن أي تسرب. بعد شهر انخفض الاستهلاك، وأدرك الجميع أن التغيير الصغير إذا استمر يمكن أن يصنع أثرًا كبيرًا.';
+  return'لا تُقاس جودة المعلومات بكثرة تداولها، بل بوضوح مصدرها وقوة الدليل الذي تستند إليه. وقد تنتشر بعض الأخبار بسرعة لأنها مثيرة، لا لأنها صحيحة. لذلك يحتاج القارئ الواعي إلى التحقق من المصدر، ومقارنة أكثر من مرجع، والتمييز بين الخبر والرأي قبل أن يعيد النشر.';
+}
+function v6ReadingComprehensionBank(grade){const passage=v6ReadingPassage(grade);if(grade==='g3')return{passage,core:[v6Q('من زرع الشتلة؟','خالد.'),v6Q('أين زرع خالد الشتلة؟','في حديقة المدرسة.'),v6Q('متى كان يسقيها؟','كل صباح.'),v6Q('ماذا كان يبعد عن الشتلة؟','الأوراق اليابسة.'),v6Q('ماذا حدث بعد أسابيع؟','نمت الشتلة وأزهرت.'),v6Q('لماذا فرح خالد؟','لأن عنايته اليومية أدت إلى نمو الشتلة وإزهارها.'),v6Q('ما الفكرة الرئيسة للنص؟','العناية المستمرة بالنبات تؤدي إلى نموه.'),v6Q('رتب الأحداث: أزهرت الشتلة — زرع خالد الشتلة — سقاها كل صباح.','زرع خالد الشتلة، ثم سقاها كل صباح، ثم أزهرت.'),v6Q('اقترح عنوانًا مناسبًا للنص.','العناية بالشتلة، أو ثمرة العناية.'),v6Q('اذكر دليلًا من النص على مسؤولية خالد.','كان يسقي الشتلة ويبعد عنها الأوراق اليابسة.')],thinking:[v6Q('ماذا تتوقع أن يحدث لو توقف خالد عن سقي الشتلة؟','قد تذبل أو يتوقف نموها، مع تعليل مناسب.'),v6Q('اذكر سلوكًا يوميًا يشبه عناية خالد بالشتلة.','إجابة مفتوحة مناسبة مثل العناية بالنظافة أو المذاكرة المنتظمة.')],exit:[v6Q('ما نتيجة العناية اليومية؟','نمو الشتلة وإزهارها.'),v6Q('هل النص خيالي أم واقعي؟ علل.','واقعي؛ لأن أحداثه ممكنة الحدوث.'),v6Q('اكتب جملة تلخص النص.','جملة صحيحة تتضمن العناية المستمرة ونتيجتها.')]};
+  if(grade==='g6')return{passage,core:[v6Q('ما هدف المبادرة؟','ترشيد استهلاك الماء.'),v6Q('ما أول إجراء قام به الطلاب؟','تسجيل كمية الماء المستخدمة يوميًا.'),v6Q('أين وضع الطلاب الملصقات؟','قرب الصنابير.'),v6Q('ماذا فعلوا عند وجود تسرب؟','أبلغوا عنه.'),v6Q('ما النتيجة بعد شهر؟','انخفض استهلاك الماء.'),v6Q('ما الفكرة الرئيسة؟','العمل المنظم والمستمر يحقق ترشيدًا في استهلاك الماء.'),v6Q('ما العلاقة بين تسجيل الاستهلاك وانخفاضه؟','التسجيل ساعد على الوعي والمتابعة واتخاذ إجراءات تقلل الاستهلاك.'),v6Q('استخرج سلوكًا يدل على المسؤولية.','الإبلاغ عن التسرب أو متابعة الاستهلاك.'),v6Q('ما العبارة التي تلخص رسالة النص؟','التغيير الصغير المستمر يصنع أثرًا كبيرًا.'),v6Q('اقترح دليلًا آخر يمكن استخدامه لقياس نجاح المبادرة.','مقارنة فواتير أو قراءات العداد قبل المبادرة وبعدها.')],thinking:[v6Q('كيف تنقل فكرة المبادرة إلى المنزل؟','خطة مناسبة تتضمن المتابعة وإغلاق الصنابير وإصلاح التسرب.'),v6Q('هل الملصقات وحدها كافية؟ علل.','لا؛ تحتاج إلى متابعة وسلوك عملي وقياس، أو إجابة مبررة.')],exit:[v6Q('اذكر إجراءين من النص.','تسجيل الاستهلاك، وضع الملصقات، الإبلاغ عن التسرب.'),v6Q('ما سبب انخفاض الاستهلاك؟','استمرار الطلاب في إجراءات الترشيد والمتابعة.'),v6Q('ما نوع النص؟','نص معلوماتي/وصفي عن مبادرة.') ]};
+  return{passage,core:[v6Q('بماذا تُقاس جودة المعلومات وفق النص؟','بوضوح المصدر وقوة الدليل.'),v6Q('لماذا قد تنتشر بعض الأخبار بسرعة؟','لأنها مثيرة، لا لأنها صحيحة بالضرورة.'),v6Q('ما الخطوة الأولى للقارئ الواعي؟','التحقق من المصدر.'),v6Q('لماذا يقارن القارئ أكثر من مرجع؟','للتأكد من صحة المعلومات وتقليل الخطأ أو التحيز.'),v6Q('ما الفرق الذي يدعو النص إلى تمييزه؟','الفرق بين الخبر والرأي.'),v6Q('استنتج موقف الكاتب من إعادة النشر السريع.','يرفضه دون تحقق ويعده سلوكًا غير واعٍ.'),v6Q('ما الفكرة الرئيسة؟','ضرورة التحقق النقدي من المعلومات قبل قبولها أو نشرها.'),v6Q('ما الحجة المستخدمة لإثبات أن الانتشار لا يعني الصحة؟','أن بعض الأخبار تنتشر لأنها مثيرة لا لأنها صحيحة.'),v6Q('اقترح عنوانًا مناسبًا.','القارئ الواعي، أو تحقق قبل أن تنشر.'),v6Q('ما نوع العلاقة بين قوة الدليل وجودة المعلومة؟','علاقة طردية؛ كلما قوي الدليل ارتفعت موثوقية المعلومة.')],thinking:[v6Q('ضع ثلاث خطوات عملية للتحقق من خبر رقمي.','التحقق من المصدر، مقارنة مراجع موثوقة، فحص التاريخ والدليل.'),v6Q('كيف تميز بين خبر ورأي في فقرة؟','الخبر يمكن التحقق منه، والرأي يتضمن حكمًا أو موقفًا شخصيًا، مع مثال.')],exit:[v6Q('هل كثرة التداول دليل كافٍ على الصحة؟','لا.'),v6Q('اذكر معيارين لجودة المعلومات.','وضوح المصدر وقوة الدليل.'),v6Q('اكتب خلاصة النص في سطر واحد.','خلاصة صحيحة عن التحقق النقدي قبل النشر.')]};}
+function v6VocabularyBank(grade){const passage=v6ReadingPassage(grade);if(grade==='g3')return{passage,core:[v6Q('ما معنى «اليابسة» في النص؟','الجافة.'),v6Q('ما ضد كلمة «صغيرة»؟','كبيرة.'),v6Q('ما مرادف كلمة «فرح»؟','سُرَّ أو سعد.'),v6Q('اختر معنى «أزهرت»: جفّت — أخرجت زهورًا — سقطت.','أخرجت زهورًا.'),v6Q('استخدم كلمة «العناية» في جملة مفيدة.','إجابة صحيحة مثل: العناية بالنبات تجعله ينمو.'),v6Q('أي كلمة تدل على الزمن؟','بعد أسابيع، أو كل صباح.'),v6Q('ما جمع «ورقة»؟','أوراق.'),v6Q('ما مفرد «أسابيع»؟','أسبوع.'),v6Q('استبدل «صنعت فرقًا» بعبارة قريبة في المعنى.','أحدثت تغييرًا أو أثرت.'),v6Q('ما الكلمة الأنسب: ___ خالد الشتلة كل صباح. (يسقي — يقطف — يهمل)','يسقي.')],thinking:[v6Q('كيف ساعدك السياق على فهم كلمة «اليابسة»؟','لأنها أوراق تُبعد عن النبات وغالبًا تكون جافة، مع تعليل.'),v6Q('اكتب كلمتين من الحقل الدلالي للنبات.','شتلة، أوراق، أزهرت، حديقة.')],exit:[v6Q('مرادف «نمت».','كبرت.'),v6Q('ضد «العناية».','الإهمال.'),v6Q('ضع «أزهرت» في جملة جديدة.','جملة صحيحة.') ]};
+  if(grade==='g6')return{passage,core:[v6Q('ما معنى «ترشيد»؟','استخدام المورد باعتدال ومنع الهدر.'),v6Q('ما ضد «انخفض»؟','ارتفع.'),v6Q('ما مرادف «تسرب» في السياق؟','خروج الماء من موضع غير محكم.'),v6Q('ما المقصود بـ «أثر»؟','نتيجة أو تأثير.'),v6Q('ما جمع «صنبور»؟','صنابير.'),v6Q('استخدم «المبادرة» في جملة.','جملة صحيحة تدل على عمل منظم يبدأه الأفراد.'),v6Q('أي كلمة تدل على الاستمرار؟','استمر، أو يوميًا، أو بعد شهر بحسب الصياغة.'),v6Q('ما العلاقة الدلالية بين «استهلاك» و«ترشيد»؟','الترشيد تنظيم وتقليل الاستهلاك غير الضروري.'),v6Q('استبدل «يصنع أثرًا» بعبارة قريبة.','يُحدث نتيجة أو تغييرًا.'),v6Q('اختر الأنسب: أبلغ الطلاب عن أي ___. (تسرب — ملصق — شهر)','تسرب.')],thinking:[v6Q('استنتج معنى «ترشيد» من الإجراءات الواردة.','تقليل الهدر من خلال المتابعة وإصلاح التسرب وإغلاق الصنابير.'),v6Q('كوّن شبكة كلمات حول «الماء».','صنبور، تسرب، استهلاك، ترشيد، عداد، مع كلمات مناسبة.')],exit:[v6Q('مرادف «أدرك».','فهم أو عرف.'),v6Q('ضد «الصغير».','الكبير.'),v6Q('اكتب جملة تستخدم «الاستمرار».','جملة صحيحة.') ]};
+  return{passage,core:[v6Q('ما معنى «تداولها»؟','انتقالها وانتشارها بين الناس.'),v6Q('ما المقصود بـ «تستند إليه»؟','تعتمد عليه.'),v6Q('ما ضد «صحيحة»؟','خاطئة.'),v6Q('ما مرادف «التمييز»؟','التفريق.'),v6Q('ما دلالة كلمة «مثيرة» في السياق؟','جاذبة للانتباه أو العاطفة.'),v6Q('استخدم «مرجع» في جملة علمية.','جملة صحيحة تبين الرجوع إلى مصدر موثوق.'),v6Q('ما العلاقة بين «الخبر» و«الرأي»؟','مفهومان متقابلان من حيث إمكان التحقق ووجود الحكم الشخصي.'),v6Q('استبدل «قوة الدليل» بعبارة قريبة.','متانة البرهان أو جودة الإثبات.'),v6Q('ما المقصود بـ «القارئ الواعي»؟','القارئ الذي يتحقق ويفكر نقديًا قبل القبول أو النشر.'),v6Q('أي كلمة أنسب: يجب ___ من المصدر. (التحقق — التداول — الإثارة)','التحقق.')],thinking:[v6Q('كيف يغيّر السياق معنى كلمة «مصدر»؟','في النص تعني الجهة أو المرجع الذي جاءت منه المعلومة، لا منبع الماء مثلًا.'),v6Q('اكتب ثلاث كلمات تنتمي إلى حقل التحقق من المعلومات.','مصدر، دليل، مرجع، تحقق، مقارنة.')],exit:[v6Q('مرادف «تنتشر».','تشيع أو تتداول.'),v6Q('ضد «الوعي».','الغفلة أو عدم الوعي.'),v6Q('اكتب جملة بكلمة «الدليل».','جملة صحيحة.') ]};}
+
+function v6NumbersBank(grade){
+  if(grade==='g3')return{core:[
+    v6Q('ما القيمة المنزلية للرقم ٥ في العدد ٥٤٨٢؟','٥٠٠٠.'),
+    v6Q('أوجد ناتج ٣٤٢٦ + ١٥٧٣.','٤٩٩٩.'),
+    v6Q('أوجد ناتج ٨٠٠٠ − ٢٧٤٥.','٥٢٥٥.'),
+    v6Q('أوجد ناتج ٧ × ٦.','٤٢.'),
+    v6Q('أوجد ناتج ٤٨ ÷ ٦.','٨.'),
+    v6Q('أي العددين أكبر: ٦٣٥٠ أم ٦٣٠٥؟','٦٣٥٠.'),
+    v6Q('أكمل: ٩ × □ = ٦٣.','٧.'),
+    v6Q('قرّب العدد ٤٦٧٢ إلى أقرب مئة.','٤٧٠٠.'),
+    v6Q('وُزعت ٢٤ قلمًا بالتساوي على ٤ علب. كم قلمًا في كل علبة؟','٦ أقلام.'),
+    v6Q('أي الأعداد الآتية زوجي: ٨٤١، ٨٤٢، ٨٤٣؟','٨٤٢.')],thinking:[
+    v6Q('اشترت سارة كتابًا بـ ٣٩٨ ريالًا وحقيبة بـ ٢٠٥ ريالات. قدّر المبلغ ثم أوجد الناتج الدقيق.','التقدير نحو ٦٠٠ ريال، والناتج الدقيق ٦٠٣ ريالات.'),
+    v6Q('اكتب مسألة لفظية تمثل العملية ٩٦ ÷ ٨ ثم حلها.','مسألة صحيحة تتضمن توزيع ٩٦ على ٨ بالتساوي، والناتج ١٢.')],exit:[v6Q('٣٠٤ + ١٢٧ = ؟','٤٣١.'),v6Q('٩٠٠ − ٤٥٨ = ؟','٤٤٢.'),v6Q('٩ × ٤ = ؟','٣٦.')]};
+  if(grade==='g6')return{core:[
+    v6Q('أوجد ناتج ٣٫٧٥ + ٢٫٨.','٦٫٥٥.'),
+    v6Q('أوجد ناتج ١٢٫٥ − ٤٫٧٨.','٧٫٧٢.'),
+    v6Q('أوجد ناتج ٢٤ × ٣٥.','٨٤٠.'),
+    v6Q('أوجد ناتج ٩٣٦ ÷ ١٨.','٥٢.'),
+    v6Q('أوجد ناتج ٣⁄٤ + ١⁄٨.','٧⁄٨.'),
+    v6Q('حوّل العدد الكسري ٢ ١⁄٣ إلى كسر غير فعلي.','٧⁄٣.'),
+    v6Q('اكتب ٠٫٤٥ في صورة نسبة مئوية.','٤٥٪.'),
+    v6Q('أي العددين أكبر: ٠٫٧ أم ٠٫٦٩؟','٠٫٧.'),
+    v6Q('أوجد ناتج ٥⁄٦ − ١⁄٣.','١⁄٢.'),
+    v6Q('أوجد ناتج ٢٫٤ × ٠٫٥.','١٫٢.')],thinking:[
+    v6Q('خصم متجر ٢٥٪ من سلعة سعرها ١٢٠ ريالًا. ما مقدار الخصم والسعر بعده؟','الخصم ٣٠ ريالًا، والسعر بعد الخصم ٩٠ ريالًا.'),
+    v6Q('رتب الأعداد ٢⁄٣، ٠٫٧، ٦٥٪ تصاعديًا مع توضيح طريقة المقارنة.','٦٥٪، ثم ٢⁄٣، ثم ٠٫٧.')],exit:[v6Q('١٫٢ + ٠٫٨ = ؟','٢.'),v6Q('٣⁄٥ في صورة عشرية.','٠٫٦.'),v6Q('١٥٪ من ٢٠٠ = ؟','٣٠.')]};
+  return{core:[
+    v6Q('أوجد ناتج −٧ + ١٢.','٥.'),
+    v6Q('أوجد قيمة ٣⁴.','٨١.'),
+    v6Q('أوجد الجذر التربيعي للعدد ١٤٤.','١٢.'),
+    v6Q('أوجد ناتج ٢⁄٣ ÷ ٤⁄٥.','٥⁄٦.'),
+    v6Q('أوجد القيمة المطلقة للعدد −٩.','٩.'),
+    v6Q('اكتب ٠٫٠٠٠٥٦ بالصيغة العلمية.','٥٫٦ × ١٠⁻⁴.'),
+    v6Q('أوجد ناتج (−٣)(٨).','−٢٤.'),
+    v6Q('أوجد ناتج ٥⁄٦ + ١⁄٤.','١٣⁄١٢ أو ١ ١⁄١٢.'),
+    v6Q('بسّط ٢³ × ٢⁴.','٢⁷ = ١٢٨.'),
+    v6Q('رتب −٥، ٣، ٠، −٢ تصاعديًا.','−٥، −٢، ٠، ٣.')],thinking:[
+    v6Q('درجة الحرارة ٤ درجات ثم انخفضت ٩ درجات. ما الدرجة الجديدة؟ فسّر بالإشارة إلى الأعداد الصحيحة.','−٥ درجات.'),
+    v6Q('قارن بين ٣√٢ و٤ دون استخدام آلة حاسبة، وبرر.','٣√٢ أكبر قليلًا من ٤؛ لأن مربعه ١٨ أكبر من ١٦.')],exit:[v6Q('−٦ − ٣ = ؟','−٩.'),v6Q('٢⁵ = ؟','٣٢.'),v6Q('√٨١ = ؟','٩.')]};
+}
+
+function v6GeometryBank(grade){
+  if(grade==='g3')return{core:[
+    v6Q('كم ضلعًا للمربع؟','٤ أضلاع.'),v6Q('ما اسم الشكل الذي له ثلاثة أضلاع؟','المثلث.'),v6Q('أي وحدة أنسب لقياس طول قلم: السنتيمتر أم الكيلومتر؟','السنتيمتر.'),v6Q('أوجد محيط مستطيل طوله ٦ سم وعرضه ٣ سم.','١٨ سم.'),v6Q('أوجد مساحة مستطيل طوله ٥ وحدات وعرضه ٤ وحدات.','٢٠ وحدة مربعة.'),v6Q('كم وجهًا للكرة؟','ليس لها أوجه مستوية.'),v6Q('ما المجسم الذي له قاعدتان دائريتان؟','الأسطوانة.'),v6Q('كم دقيقة في نصف ساعة؟','٣٠ دقيقة.'),v6Q('أي أكبر: متر واحد أم ٩٠ سنتيمترًا؟','متر واحد.'),v6Q('هل للمستطيل خط تماثل؟','نعم، له خطا تماثل.')],thinking:[v6Q('صمّم مستطيلًا محيطه ٢٠ سم، واكتب طولًا وعرضًا ممكنين.','مثلًا: الطول ٦ سم والعرض ٤ سم.'),v6Q('لماذا نستخدم السنتيمتر لقياس الكتاب ولا نستخدم الكيلومتر؟','لأن السنتيمتر يناسب الأطوال الصغيرة والكيلومتر للمسافات الكبيرة.')],exit:[v6Q('محيط مربع طول ضلعه ٤ سم.','١٦ سم.'),v6Q('مساحة مربع طول ضلعه ٣ وحدات.','٩ وحدات مربعة.'),v6Q('٦٠ دقيقة تساوي كم ساعة؟','ساعة واحدة.')]};
+  if(grade==='g6')return{core:[
+    v6Q('أوجد مساحة مثلث قاعدته ٨ سم وارتفاعه ٥ سم.','٢٠ سم².'),v6Q('أوجد مساحة متوازي أضلاع قاعدته ٧ سم وارتفاعه ٤ سم.','٢٨ سم².'),v6Q('أوجد حجم متوازي مستطيلات أبعاده ٣، ٤، ٥ سم.','٦٠ سم³.'),v6Q('حوّل ٢٫٥ متر إلى سنتيمترات.','٢٥٠ سم.'),v6Q('ما مجموع زوايا المثلث؟','١٨٠ درجة.'),v6Q('زاويتان متتامتان، إحداهما ٣٥°. أوجد الأخرى.','٥٥°.'),v6Q('ما اسم المثلث الذي تتساوى أضلاعه الثلاثة؟','مثلث متساوي الأضلاع.'),v6Q('نصف قطر دائرة ٦ سم. ما قطرها؟','١٢ سم.'),v6Q('أي وحدة أنسب لحجم صندوق: سم³ أم سم²؟','سم³.'),v6Q('ما التحويل الهندسي الذي ينتج صورة مرآة؟','الانعكاس.')],thinking:[v6Q('حديقة مستطيلة مساحتها ٤٨ م² وعرضها ٦ م. أوجد طولها ومحيطها.','الطول ٨ م، والمحيط ٢٨ م.'),v6Q('فسر الفرق بين المساحة والحجم بمثال.','المساحة تغطي سطحًا بوحدات مربعة، والحجم يشغل حيزًا بوحدات مكعبة.')],exit:[v6Q('مساحة مثلث قاعدته ١٠ وارتفاعه ٤.','٢٠ وحدة².'),v6Q('١٫٢ متر = كم سنتيمترًا؟','١٢٠ سم.'),v6Q('قطر دائرة نصف قطرها ٧ سم.','١٤ سم.')]};
+  return{core:[
+    v6Q('أوجد ميل المستقيم المار بالنقطتين (١،٢) و(٥،١٠).','٢.'),v6Q('أوجد المسافة بين النقطتين (٠،٠) و(٣،٤).','٥ وحدات.'),v6Q('ما مجموع الزوايا الداخلية لمضلع خماسي؟','٥٤٠°.'),v6Q('إذا كان مثلثان متشابهان بنسبة ٢:٣، وطول ضلع في الأول ٨، فما المناظر في الثاني؟','١٢.'),v6Q('أوجد محيط دائرة نصف قطرها ٧ باستخدام π = ٢٢⁄٧.','٤٤ وحدة.'),v6Q('أوجد مساحة دائرة نصف قطرها ٥ بدلالة π.','٢٥π وحدة².'),v6Q('زاوية خارجية لمثلث تساوي مجموع الزاويتين الداخليتين البعيدتين. إذا كانتا ٤٠° و٦٥° فما الخارجية؟','١٠٥°.'),v6Q('ما معادلة مستقيم ميله ٣ ويقطع محور الصادات عند −٢؟','ص = ٣س − ٢.'),v6Q('أوجد حجم أسطوانة نصف قطرها ٣ وارتفاعها ٥ بدلالة π.','٤٥π وحدة³.'),v6Q('إذا كانت أضلاع مثلث ٦، ٨، ١٠، فهل هو قائم؟','نعم؛ لأن ٦² + ٨² = ١٠².')],thinking:[v6Q('برهن أن المثلث ذي الأضلاع ٥، ١٢، ١٣ قائم.','٥² + ١٢² = ٢٥ + ١٤٤ = ١٦٩ = ١٣².'),v6Q('صمّم مسألة واقعية تستخدم التشابه لإيجاد ارتفاع جسم.','مسألة صحيحة تستخدم تناسب الأطوال أو الظلال مع حل منطقي.')],exit:[v6Q('ميل مستقيم أفقي.','صفر.'),v6Q('مجموع زوايا رباعي.','٣٦٠°.'),v6Q('مساحة دائرة نصف قطرها ٢.','٤π وحدة².')]};
+}
+
+function v6AlgebraBank(grade){
+  if(grade==='g3')return{core:[
+    v6Q('أكمل النمط: ٤، ٨، ١٢، □.','١٦.'),v6Q('أكمل: ٧ + □ = ١٥.','٨.'),v6Q('إذا كانت القاعدة «أضف ٣»، فما مخرج ٥؟','٨.'),v6Q('المدخل ٤ والقاعدة «اضرب في ٢». ما المخرج؟','٨.'),v6Q('اكتب جملة عددية تمثل: مع سارة ٦ أقلام واشترت ٤.','٦ + ٤ = ١٠.'),v6Q('أي خاصية تظهر في ٣ + ٥ = ٥ + ٣؟','خاصية الإبدال.'),v6Q('أكمل النمط: ٢، ٥، ٨، ١١، □.','١٤.'),v6Q('إذا كان □ − ٩ = ١٢، فما العدد؟','٢١.'),v6Q('جدول قاعدته +٤: إذا كان المدخل ٧ فما المخرج؟','١١.'),v6Q('هل ٤ × ٦ = ٦ × ٤؟ ولماذا؟','نعم؛ بخاصية الإبدال في الضرب.')],thinking:[v6Q('أنشئ نمطًا يبدأ بـ ٣ ويزداد ٥ كل مرة، واكتب أول خمسة حدود.','٣، ٨، ١٣، ١٨، ٢٣.'),v6Q('فسر كيف تتحقق من العدد المفقود في □ + ١٧ = ٣٠.','نطرح ١٧ من ٣٠ فنحصل على ١٣، ثم نتحقق بالجمع.')],exit:[v6Q('٥، ١٠، ١٥، □.','٢٠.'),v6Q('□ + ٦ = ١٤.','٨.'),v6Q('قاعدة ×٣ ومدخل ٤.','١٢.')]};
+  if(grade==='g6')return{core:[
+    v6Q('بسّط ٣س + ٢س.','٥س.'),v6Q('أوجد قيمة ٢س + ٥ عندما س = ٤.','١٣.'),v6Q('حل المعادلة س + ٧ = ١٩.','س = ١٢.'),v6Q('حل ٣س = ٢١.','س = ٧.'),v6Q('اكتب تعبيرًا يمثل «خمسة أكثر من عدد ن».','ن + ٥.'),v6Q('أكمل النمط: ٢، ٦، ١٨، ٥٤، □.','١٦٢.'),v6Q('هل العدد ١٠ يحقق المعادلة س − ٣ = ٧؟','نعم.'),v6Q('بسّط ٤(س + ٢).','٤س + ٨.'),v6Q('جدول قاعدته ٢س + ١. أوجد المخرج عند س = ٥.','١١.'),v6Q('حل ٢س + ٣ = ١٥.','س = ٦.')],thinking:[v6Q('محيط مربع ٣٦ سم. اكتب معادلة ثم أوجد طول الضلع.','٤س = ٣٦، إذن س = ٩ سم.'),v6Q('قارن بين التعبيرين ٣(س+٢) و٣س+٦.','متكافئان بخاصية التوزيع.')],exit:[v6Q('س + ٤ = ٩.','س = ٥.'),v6Q('قيمة ٣س عند س=٦.','١٨.'),v6Q('بسّط س + س + س.','٣س.')]};
+  return{core:[
+    v6Q('حل ٣س − ٥ = ١٦.','س = ٧.'),v6Q('حل ٢(س + ٤) = ١٨.','س = ٥.'),v6Q('بسّط ٤س − ٣ + ٢س + ٧.','٦س + ٤.'),v6Q('حل المتباينة ٢س + ١ < ٩.','س < ٤.'),v6Q('حل النظام: س + ص = ٧، س − ص = ١.','س = ٤، ص = ٣.'),v6Q('حلل س² − ٩.','(س − ٣)(س + ٣).'),v6Q('أوجد جذري س² − ٥س + ٦ = ٠.','س = ٢ أو س = ٣.'),v6Q('إذا كانت د(س)=٢س−١ فأوجد د(٥).','٩.'),v6Q('اكتب معادلة مستقيم ميله ٢ ويمر بالنقطة (٠،٣).','ص = ٢س + ٣.'),v6Q('بسّط (س³)(س⁴).','س⁷.')],thinking:[v6Q('حل مسألة: مجموع عددين ٢٢ والفرق بينهما ٦.','العددان ١٤ و٨.'),v6Q('فسر لماذا تتغير إشارة المتباينة عند الضرب في عدد سالب.','لأن ترتيب الأعداد ينعكس على خط الأعداد؛ مع مثال صحيح.')],exit:[v6Q('٥س = ٣٥.','س = ٧.'),v6Q('حلل س² − ١٦.','(س−٤)(س+٤).'),v6Q('د(٣) إذا د(س)=س+٤.','٧.')]};
+}
+
+function v6DataProbabilityBank(grade){
+  if(grade==='g3')return{core:[
+    v6Q('في جدول: تفاح ٥، برتقال ٣، موز ٤. أيها الأكثر؟','التفاح.'),v6Q('كم يزيد التفاح على البرتقال؟','٢.'),v6Q('ما مجموع الفواكه؟','١٢.'),v6Q('إذا كان رمز واحد في التمثيل بالصور يساوي طالبين، فماذا تمثل ٤ رموز؟','٨ طلاب.'),v6Q('أي حدث مؤكد عند رمي مكعب أرقام من ١ إلى ٦: ظهور عدد أقل من ٧ أم ظهور ٨؟','ظهور عدد أقل من ٧.'),v6Q('أي حدث مستحيل عند رمي مكعب الأرقام؟','ظهور ٨.'),v6Q('كيس فيه ٥ كرات حمراء و١ زرقاء. أي اللونين أكثر احتمالًا؟','الأحمر.'),v6Q('ما أنسب تمثيل لمقارنة أعداد الطلاب في ثلاثة صفوف؟','الأعمدة.'),v6Q('رتب: مؤكد، مستحيل، ممكن لحدث ظهور ٣ عند رمي مكعب.','ممكن.'),v6Q('إذا اختار ٦ طلاب القراءة و٤ الرسم، فكم المجموع؟','١٠ طلاب.')],thinking:[v6Q('كوّن سؤالين يمكن الإجابة عنهما من جدول الفواكه.','سؤالان مناسبان مثل الأكثر والمجموع والفرق.'),v6Q('كيف تجعل سحب الكرة الزرقاء أكثر احتمالًا؟','إضافة كرات زرقاء أو تقليل الحمراء.')],exit:[v6Q('رمزان وكل رمز = ٣. ما القيمة؟','٦.'),v6Q('حدث ظهور ٩ على مكعب ١–٦.','مستحيل.'),v6Q('الأكثر بين ٧ و٥.','٧.')]};
+  if(grade==='g6')return{core:[
+    v6Q('أوجد المتوسط الحسابي للأعداد ٤، ٦، ٨، ١٠.','٧.'),v6Q('أوجد الوسيط للأعداد ٣، ٥، ٧، ٩، ١١.','٧.'),v6Q('أوجد المنوال: ٢، ٤، ٤، ٥، ٦.','٤.'),v6Q('أوجد المدى: ١٢، ١٧، ٩، ٢٠.','١١.'),v6Q('احتمال ظهور عدد زوجي عند رمي مكعب أرقام.','٣⁄٦ = ١⁄٢.'),v6Q('صندوق فيه ٣ حمراء و٢ زرقاء. احتمال الحمراء.','٣⁄٥.'),v6Q('إذا كان ٤٠٪ من ٥٠ طالبًا يفضلون العلوم، فكم عددهم؟','٢٠ طالبًا.'),v6Q('أي تمثيل أنسب لتغير درجة الحرارة عبر أسبوع؟','الخطوط.'),v6Q('هل المتوسط يتأثر بقيمة متطرفة؟','نعم.'),v6Q('في استطلاع ١٢٠ طالبًا، اختير ٣٠ عشوائيًا. ما الكسر الذي يمثل العينة؟','٣٠⁄١٢٠ = ١⁄٤.')],thinking:[v6Q('درجات: ٥، ٦، ٦، ٧، ٢٠. أي مقياس أنسب لوصف المركز؟ علل.','الوسيط؛ لأن ٢٠ قيمة متطرفة تؤثر في المتوسط.'),v6Q('صمّم تجربة عشوائية احتمال النجاح فيها ١⁄٤.','مثل سحب بطاقة واحدة مميزة من أربع بطاقات متساوية الاحتمال.')],exit:[v6Q('متوسط ٦ و٨.','٧.'),v6Q('مدى ٢، ٩، ٥.','٧.'),v6Q('احتمال صورة عند رمي قطعة نقود عادلة.','١⁄٢.')]};
+  return{core:[
+    v6Q('أوجد المتوسط للأعداد ٥، ٧، ٨، ١٠، ١٠.','٨.'),v6Q('أوجد الوسيط للأعداد ٢، ٤، ٦، ٨.','٥.'),v6Q('أوجد المدى الربيعي إذا كان الربيع الأول ٣ والثالث ١١.','٨.'),v6Q('احتمال حدث متممه ٠٫٣. أوجد احتمال الحدث.','٠٫٧.'),v6Q('رُميت قطعتا نقود. احتمال ظهور صورتين.','١⁄٤.'),v6Q('إذا كان احتمال النجاح ٠٫٨ في ٥٠ تجربة، فما العدد المتوقع؟','٤٠.'),v6Q('ما أثر زيادة ثابتة مقدارها ٣ لكل قيمة على المتوسط؟','يزداد المتوسط ٣.'),v6Q('ما أثر ضرب كل قيمة في ٢ على المدى؟','يتضاعف المدى.'),v6Q('هل الارتباط يعني السببية دائمًا؟','لا.'),v6Q('في عينة منحازة اختير المتطوعون فقط. ما المشكلة؟','العينة قد لا تمثل المجتمع.')],thinking:[v6Q('بيّن كيف يمكن لرسم بياني بمحور مبتور أن يضلل القارئ.','يبالغ في الفروق البصرية؛ يجب فحص مقياس المحور.'),v6Q('قارن بين عينة عشوائية وعينة ملائمة من حيث تمثيل المجتمع.','العشوائية غالبًا أقل تحيزًا؛ الملائمة أسهل لكنها قد لا تمثل المجتمع.')],exit:[v6Q('متمم احتمال ٠٫٢.','٠٫٨.'),v6Q('احتمال حدث مؤكد.','١.'),v6Q('احتمال حدث مستحيل.','٠.')]};
+}
+
+function v6LifeScienceBank(grade){
+  const primary=grade==='g3';
+  return{core:[
+    v6Q(primary?'ما الوظيفة الرئيسة للجذور؟':'ما وظيفة الجذور في النبات؟','امتصاص الماء والأملاح وتثبيت النبات.'),
+    v6Q('أي جزء يصنع الغذاء غالبًا في النبات؟','الأوراق.'),
+    v6Q('ما الذي تحتاج إليه الكائنات الحية للبقاء؟','الماء والغذاء والهواء وبيئة مناسبة.'),
+    v6Q('ما المقصود بالموطن؟','المكان الذي يعيش فيه الكائن ويوفر حاجاته.'),
+    v6Q('كيف تساعد التكيفات الكائن الحي؟','تساعده على البقاء في بيئته.'),
+    v6Q('ما دور المنتج في السلسلة الغذائية؟','يصنع غذاءه ويبدأ انتقال الطاقة.'),
+    v6Q('اذكر مثالًا لمستهلك.','الإنسان أو الأرنب أو الأسد، مع مثال صحيح.'),
+    v6Q('ماذا يحدث للطاقة خلال السلسلة الغذائية؟','تنتقل من كائن إلى آخر وتقل الطاقة المتاحة في المستويات الأعلى.'),
+    v6Q('ما فائدة الهيكل العظمي؟','الدعم والحماية والمساعدة على الحركة.'),
+    v6Q('لماذا تعد المحافظة على التنوع الحيوي مهمة؟','لثبات الأنظمة البيئية واستمرار مواردها.')],thinking:[
+    v6Q('توقع أثر اختفاء النباتات من نظام بيئي.','تقل مصادر الغذاء والطاقة وتتأثر المستهلكات والسلسلة الغذائية.'),
+    v6Q('اربط بين تركيب جزء من كائن حي ووظيفته.','مثال صحيح مثل شكل الأسنان ووظيفتها أو جذور النبات وامتصاص الماء.')],exit:[v6Q('من المنتج: العشب أم الأرنب؟','العشب.'),v6Q('ما معنى التكيف؟','صفة أو سلوك يساعد على البقاء.'),v6Q('وظيفة الأوراق.','صنع الغذاء غالبًا بالبناء الضوئي.')]};
+}
+function v6PhysicalScienceBank(grade){
+  return{core:[
+    v6Q('ما الفرق بين الكتلة والحجم؟','الكتلة مقدار المادة، والحجم الحيز الذي تشغله.'),
+    v6Q('أي حالة من حالات المادة لها شكل وحجم ثابتان؟','الحالة الصلبة.'),
+    v6Q('ما التغير الذي يحول السائل إلى غاز؟','التبخر.'),
+    v6Q('هل انصهار الثلج تغير فيزيائي أم كيميائي؟','تغير فيزيائي.'),
+    v6Q('ما القوة التي تجذب الأجسام نحو الأرض؟','الجاذبية.'),
+    v6Q('كيف تؤثر قوة أكبر في حركة جسم؟','قد تزيد سرعته أو تغير اتجاهه بحسب اتجاه القوة.'),
+    v6Q('أي المواد موصل جيد للكهرباء عادة: النحاس أم الخشب؟','النحاس.'),
+    v6Q('ما مصدر الطاقة في المصباح اليدوي؟','الطاقة الكيميائية في البطارية تتحول إلى كهربائية وضوئية.'),
+    v6Q('ماذا يحدث للظل عندما يقترب الجسم من مصدر الضوء؟','يكبر غالبًا.'),
+    v6Q('لماذا يُعد صدأ الحديد تغيرًا كيميائيًا؟','لأنه ينتج مادة جديدة تختلف عن الحديد.')],thinking:[
+    v6Q('صمّم تجربة تقارن أثر سطحين مختلفين في حركة جسم.','تحديد متغير مستقل وناتج وضبط بقية العوامل، مثل مقارنة مسافة حركة سيارة على سطح أملس وخشن.'),
+    v6Q('فسر تحول الطاقة في لعبة تعمل بالبطارية وتتحرك وتصدر صوتًا.','كيميائية إلى كهربائية ثم حركية وصوتية.')],exit:[v6Q('تحول الغاز إلى سائل.','التكاثف.'),v6Q('قوة تعارض الحركة بين سطحين.','الاحتكاك.'),v6Q('الخشب موصل أم عازل غالبًا؟','عازل.')]};
+}
+function v6EarthSpaceBank(grade){
+  return{core:[
+    v6Q('ما سبب تعاقب الليل والنهار؟','دوران الأرض حول محورها.'),
+    v6Q('ما سبب الفصول الأربعة؟','ميل محور الأرض مع دورانها حول الشمس.'),
+    v6Q('ما الفرق بين الطقس والمناخ؟','الطقس حالة الجو قصيرة المدى، والمناخ نمطه خلال مدة طويلة.'),
+    v6Q('ما الأداة المستخدمة لقياس درجة الحرارة؟','مقياس الحرارة.'),
+    v6Q('ما العملية التي تصعد فيها المياه إلى الغلاف الجوي؟','التبخر.'),
+    v6Q('ما الذي يسبب معظم الزلازل؟','حركة الصفائح الأرضية.'),
+    v6Q('اذكر موردًا طبيعيًا متجددًا.','الشمس أو الرياح أو الماء، مع مثال صحيح.'),
+    v6Q('لماذا نرى أطوارًا مختلفة للقمر؟','لتغير الجزء المضاء الذي نراه مع حركة القمر حول الأرض.'),
+    v6Q('ما أقرب نجم إلى الأرض؟','الشمس.'),
+    v6Q('كيف تقلل النباتات من انجراف التربة؟','تثبت الجذور التربة وتبطئ حركة الماء والرياح.')],thinking:[
+    v6Q('فسر كيف تؤثر إزالة الغطاء النباتي في التربة.','يزداد الانجراف وتفقد التربة جزءًا من خصوبتها.'),
+    v6Q('اقترح بيانات لازمة لمقارنة مناخ مدينتين.','متوسطات الحرارة والأمطار والرطوبة والرياح عبر سنوات.')],exit:[v6Q('دوران الأرض حول محورها يسبب ماذا؟','الليل والنهار.'),v6Q('ماء يتساقط من السحب.','هطول.'),v6Q('الشمس كوكب أم نجم؟','نجم.')]};
+}
+
+function v6GenericBank(u){
+  const skill=u.name;
+  return{core:Array.from({length:10},(_,i)=>v6Q(`سؤال تشخيصي قابل للتحرير ${v6Ar(i+1)} في «${skill}»: اكتبي هنا مؤشر الأداء والسؤال المناسب من المنهج.`,`محك الإجابة يُستكمل بعد تخصيص السؤال؛ لا يعتمد هذا القالب إجابة مفترضة.`)),thinking:[v6Q(`مهمة تطبيقية قابلة للتحرير تربط «${skill}» بموقف جديد.`,`يُبنى محك تصحيح واضح قبل التطبيق.`),v6Q(`سؤال تفسير أو تبرير قابل للتحرير في «${skill}».`,`إجابة مدعومة بالخطوات أو الدليل وفق طبيعة المهارة.`)],exit:[v6Q('تقويم ختامي ١ — يُخصص وفق مؤشر الأداء.','يُحدد بعد التخصيص.'),v6Q('تقويم ختامي ٢ — يُخصص وفق مؤشر الأداء.','يُحدد بعد التخصيص.'),v6Q('تقويم ختامي ٣ — يُخصص وفق مؤشر الأداء.','يُحدد بعد التخصيص.')],generic:true};
+}
+
+function v6WorksheetBank(u,grade){
+  const n=v6Key(u.name),s=v6Key(u.subject);
+  if(n.includes('استيعابالمقروء'))return v6ReadingComprehensionBank(grade);
+  if(n.includes('دلالاتالالفاظ')||n.includes('دلالاتالألفاظ'))return v6VocabularyBank(grade);
+  if(n.includes('الاعدادوالعمليات')||n.includes('الأعدادوالعمليات'))return v6NumbersBank(grade);
+  if(n.includes('الهندسهوالقياس')||n.includes('الهندسةوالقياس'))return v6GeometryBank(grade);
+  if(n.includes('الجبر'))return v6AlgebraBank(grade);
+  if(n.includes('البياناتوالاحتمالات')||n.includes('البياناتوالاحتمال'))return v6DataProbabilityBank(grade);
+  if(n.includes('علومالحياه')||n.includes('علومالحياة'))return v6LifeScienceBank(grade);
+  if(n.includes('العلومالفيزيائيه')||n.includes('العلومالفيزيائية'))return v6PhysicalScienceBank(grade);
+  if(n.includes('علومالارضوالفضاء')||n.includes('علومالأرضوالفضاء'))return v6EarthSpaceBank(grade);
+  if(s.includes('قراءه')||s.includes('قراءة'))return v6ReadingComprehensionBank(grade);
+  return v6GenericBank(u);
+}
+
+function v6QuestionHtml(q,i){
+  const opts=(q.options||[]).length?`<div class="v6Options">${q.options.map((o,j)=>`<span>${v6Ar(j+1)}. ${esc(o)}</span>`).join('')}</div>`:'';
+  return`<div class="v6Question"><b>${v6Ar(i)}.</b><div><div contenteditable="true">${esc(q.q)}</div>${opts}<div class="v6AnswerLine"></div></div></div>`;
+}
+function v6AnswerRow(q,i){return`<tr><td>${v6Ar(i)}</td><td>${esc(q.answer)}</td><td>${esc(q.explanation||'—')}</td></tr>`}
+function v6WorksheetHtml(u,d,index){
+  const bank=v6WorksheetBank(u,d.grade),all=[...(bank.core||[]),...(bank.thinking||[]),...(bank.exit||[])],info=v6SkillInfo(u.name,u.subject);
+  const scoreMax=(bank.core||[]).length+((bank.thinking||[]).length*2)+(bank.exit||[]).length;
+  return`<article class="v6Sheet v6A4Page" contenteditable="false">
+    <header class="v6SheetHead"><div><small>ورقة عمل مرتبطة بنتائج نافس</small><h2>${esc(u.subject)} — ${esc(u.name)}</h2></div><span class="v6SheetNo">${v6Ar(index)}</span></header>
+    <div class="v6SheetMeta"><span><b>المدرسة:</b> ${esc(d.school||'........................')}</span><span><b>الصف:</b> ${esc(v6GradeName(d.grade))}</span><span><b>اسم الطالب/ة:</b> ....................................</span><span><b>التاريخ:</b> ........ / ........ / ........</span></div>
+    <div class="v6Objective"><b>الهدف:</b> أن يطبق الطالب/ة مهارات «${esc(u.name)}» في أسئلة متدرجة، ويبرر الإجابة عند الحاجة.</div>
+    ${bank.generic?'<div class="v6Note v6Warning">هذه المهارة غير مطابقة لبنك المجالات القياسي؛ لذلك أُنشئ قالب تشخيصي قابل للتحرير دون اختراع محتوى أو إجابات.</div>':''}
+    ${bank.passage?`<div class="v6Passage"><b>النص:</b><p>${esc(bank.passage)}</p></div>`:''}
+    <h3 class="v6Subhead">أولًا: أسئلة متدرجة</h3>${(bank.core||[]).map((q,i)=>v6QuestionHtml(q,i+1)).join('')}
+    <h3 class="v6Subhead">ثانيًا: التفكير والتطبيق</h3>${(bank.thinking||[]).map((q,i)=>v6QuestionHtml(q,(bank.core||[]).length+i+1)).join('')}
+    <h3 class="v6Subhead">ثالثًا: تقويم ختامي قصير</h3>${(bank.exit||[]).map((q,i)=>v6QuestionHtml(q,(bank.core||[]).length+(bank.thinking||[]).length+i+1)).join('')}
+    <footer class="v6Score"><span>الدرجة: ........ / ${v6Ar(scoreMax)}</span><span>ملاحظة المعلم/ة: ........................................................................</span></footer>
+  </article>
+  <article class="v6AnswerKey v6A4Page">
+    <header class="v6SheetHead"><div><small>نموذج إجابة مستقل</small><h2>${esc(u.subject)} — ${esc(u.name)}</h2></div><span class="v6SheetNo">${v6Ar(index)}</span></header>
+    <div class="v6Note"><b>تنبيه:</b> يراجع المعلم/ة ملاءمة الأسئلة للصف والمنهج قبل التطبيق، وتقبل البدائل الصحيحة في الأسئلة المفتوحة.</div>
+    <div class="v6TableWrap"><table class="v6Table"><thead><tr><th>السؤال</th><th>الإجابة الصحيحة/المحك</th><th>تفسير مختصر</th></tr></thead><tbody>${all.map((q,i)=>v6AnswerRow(q,i+1)).join('')}</tbody></table></div>
+  </article>`;
+}
+function v6WorksheetsHtml(d,a){
+  if(!a.actionUnits.length)return`<section class="v6Section"><div class="v6SectionTitle"><div><h3>📄 أوراق العمل</h3></div></div><div class="v6Empty">لا تُنشأ أوراق عمل قبل تحديد مهارات ذات فجوة فعلية أو أولوية تشخيصية.</div></section>`;
+  return`<section class="v6Section v6WorksheetsIntro"><div class="v6SectionTitle"><div><h3>📄 أوراق العمل ونماذج الإجابة</h3><p>ورقة مستقلة لكل أولوية، تتضمن ١٠ أسئلة متدرجة وسؤالين للتفكير و٣ أسئلة ختامية، يليها نموذج إجابة مستقل.</p></div></div><div class="v6Note">الأسئلة مبنية على المجالات القياسية الشائعة في نافس. يجب مراجعتها تربويًا قبل التطبيق، خصوصًا إذا كان اسم المهارة في التقرير عامًا أو مختلفًا.</div></section>${a.actionUnits.map((u,i)=>v6WorksheetHtml(u,d,i+1)).join('')}`;
+}
+
+function v6PackageHtml(d,a,includeWorksheets=true){return[
+  v6ExecutiveHtml(d,a),v6SubjectSummaryHtml(d),v6DashboardHtml(d,a),v6InterpretationsHtml(d,a),v6PrioritiesHtml(a),v6PlansHtml(d,a),v6ImpactHtml(a),v6TimelineHtml(a),includeWorksheets?v6WorksheetsHtml(d,a):''
+].join('')}
+
+function v6RenderAnalysis(d,a){
+  $('#validation').innerHTML=a.validation.length?`<div class="notice"><b>⚠️ تحقق قبل اعتماد الحزمة:</b><ul>${a.validation.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:`<div class="status good">✅ اجتازت البيانات اختبارات الاتساق الأساسية. تبقى المراجعة البشرية إلزامية.</div>`;
+  $('#analysis').innerHTML=v6ExecutiveHtml(d,a);
+  $('#charts').innerHTML=v6SubjectSummaryHtml(d);
+  const map={v6Dashboard:v6DashboardHtml(d,a),v6Interpretation:v6InterpretationsHtml(d,a),v6Priorities:v6PrioritiesHtml(a),v6Plans:v6PlansHtml(d,a),v6Impact:v6ImpactHtml(a),v6Timeline:v6TimelineHtml(a),v6Worksheets:v6WorksheetsHtml(d,a)};
+  Object.entries(map).forEach(([id,html])=>{const el=document.getElementById(id);if(el)el.innerHTML=html});
+  window.v6Last={d,a};show('#analysisSection');setTimeout(()=>$('#analysisSection').scrollIntoView({behavior:'smooth'}),120);
+}
+function v6BuildReport(d){
+  const a=v6Analyze(d),ch=v6Has(d.change)?(Number(d.change)>0?'+'+v6Num(d.change):v6Num(d.change)):'—';
+  $('#report').innerHTML=`<article class="report v6FinalReport"><header class="rHead"><div><small>لوحة تحليل نتائج نافس وخطة رفع مستوى الأداء</small><h2>${esc(d.school||'المدرسة')}</h2></div><div class="change">${esc(ch)}</div></header><div class="rMeta"><div><small>الصف</small><b>${esc(v6GradeName(d.grade))}</b></div><div><small>العام الدراسي</small><b>${esc(v6Ar(d.year||'—'))}</b></div><div><small>عدد الطلبة</small><b>${v6Has(d.total)?v6Ar(d.total):'—'}</b></div><div><small>المختبرون</small><b>${v6Has(d.tested)?v6Ar(d.tested):'—'}</b></div><div><small>الجهة</small><b>${esc(d.region||'—')}</b></div></div><div class="v6Profile"><span><b>المرحلة:</b> ${esc(d.stage||v6GradeName(d.grade))}</span><span><b>نوع المدرسة:</b> ${esc(d.schoolType||'—')}</span><span><b>الفئة:</b> ${esc(d.gender||'—')}</span><span><b>مصدر البيانات:</b> ${currentFile?esc(currentFile.name):'إدخال يدوي / بيانات تجريبية'}</span></div><div class="v6ReportBody">${v6PackageHtml(d,a,true)}</div><footer class="rFoot"><small class="reportDisclaimer">تحليل مدرسي مبني على البيانات التي راجعها المستخدم واعتمدها. لا يُعد تقريرًا رسميًا صادرًا من هيئة تقويم التعليم والتدريب، ولا يثبت سببًا للنتائج دون تشخيص إضافي.</small><div class="reportSignature"><span class="reportLogo brandMark" aria-hidden="true"></span><div><b>أ/ فاطمة هزازي</b><span>ملتقى معلمي ومعلمات الرياضيات · ملتقى التعليم التفاعلي</span></div></div></footer></article>`;
+  window.v6Last={d,a};show('#reportSection');setTimeout(()=>$('#reportSection').scrollIntoView({behavior:'smooth'}),120);
+}
+function v6ReviewReady(){
+  const chk=document.getElementById('reviewConfirmed');if(chk&&chk.checked)return true;
+  const gate=document.querySelector('.reviewGate');if(gate){gate.classList.add('v6Shake');setTimeout(()=>gate.classList.remove('v6Shake'),550);gate.scrollIntoView({behavior:'smooth',block:'center'})}
+  alert('راجعي جميع القيم المستخرجة أولًا، ثم فعّلي مربع تأكيد المراجعة.');return false;
+}
+function v6ResetReview(){const chk=document.getElementById('reviewConfirmed');if(chk)chk.checked=false}
+
+// لا تعتمد قراءة الإصدار ٦ قيمًا هندسية بديلة عند تعذر OCR.
+v5Levels=async function(numWorker,canvas,col){
+  const H=canvas.height,cw=col.x1-col.x0,rect={x:col.x0,y:H*.266,w:cw,h:H*.052},kinds=['red','orange','medium','high'];
+  const comps=kinds.map(k=>v4LargestColor(canvas,rect,k,cw,H)),vals=[];
+  for(const c of comps){if(!c){vals.push('');continue}const b={x:c.x+c.w*.04,y:c.y+c.h*.01,w:c.w*.92,h:c.h*.96};const v=await v5Number(numWorker,canvas,b,{min:0,max:100});vals.push(v==null?'':Math.round(v*10)/10)}
+  return{veryLow:vals[0],low:vals[1],medium:vals[2],high:vals[3]};
+};
+v5MasteryTargets=async function(numWorker,canvas,col){
+  const out={},H=canvas.height,cw=col.x1-col.x0;
+  const pur=solidCandidates(colorComponents(canvas,{x:col.x0,y:H*.52,w:cw,h:H*.16},'purple'),cw,H).filter(c=>c.y>H*.54&&c.y<H*.68).sort((a,b)=>b.area-a.area)[0];
+  if(pur){const v=await v5Number(numWorker,canvas,{x:pur.x-6,y:pur.y-6,w:pur.w+12,h:pur.h+12},{min:0,max:100});if(v!=null)out.mastery=Math.round(v*10)/10}
+  const gs=solidCandidates(colorComponents(canvas,{x:col.x0,y:H*.55,w:cw,h:H*.105},'green'),cw,H).filter(c=>c.x<col.x0+cw*.60&&c.w>cw*.035&&c.h>H*.006).sort((a,b)=>a.y-b.y);
+  if(gs.length>=2){const top=await v5GreenCandidates(numWorker,canvas,gs[0],50,100),bot=await v5GreenCandidates(numWorker,canvas,gs[gs.length-1],15,95);if(top[0])out.target2030=top[0].v;if(bot[0])out.target=bot[0].v}
+  return out;
+};
+v5Domains=async function(arWorker,numWorker,canvas,col,grade,subject){
+  const H=canvas.height,cw=col.x1-col.x0;let bars=groupDomainBarsV3(canvas,col);const expected=domainTemplate(grade,subject).length;
+  if(bars.length>expected)bars=bars.sort((a,b)=>b.h-a.h).slice(0,expected).sort((a,b)=>a.cx-b.cx);
+  const out=[];for(let i=0;i<bars.length;i++){const b=bars[i],geom=Math.max(0,Math.min(100,(H*.859-b.y)/(H*(.859-.752))*100)),valBox={x:Math.max(col.x0,b.cx-cw*.105),y:Math.max(0,b.y-H*.037),w:Math.min(cw*.21,col.x1-Math.max(col.x0,b.cx-cw*.105)),h:H*.035};const value=await v5Number(numWorker,canvas,valBox,{hint:geom,min:0,max:100});const labelBox={x:Math.max(col.x0,b.cx-cw*.19),y:H*.858,w:Math.min(cw*.38,col.x1-Math.max(col.x0,b.cx-cw*.19)),h:H*.045};const label=await ocrRegionV3(arWorker,canvas,labelBox,'6','');let name=v4DomainName(label,subject,grade,i);if(!label||/^مجال\s/.test(name))name=v5VisualDomainFallback(grade,subject,i);out.push({name,value:value==null?'':Math.round(value*10)/10,benchmark:''})}
+  while(out.length<expected){out.push({name:v5VisualDomainFallback(grade,subject,out.length),value:'',benchmark:''})}return out;
+};
+
+function v6Demo(){
+  currentFile=null;$('#school').value='مدرسة نموذجية';$('#region').value='إدارة تعليم نموذجية — بيانات افتراضية';$('#grade').value='g3';$('#year').value='2026';$('#totalStudents').value='60';$('#testedStudents').value='58';$('#change').value='3.5';$('#gender').value='غير محدد';$('#schoolType').value='حكومي';$('#stage').value='المرحلة الابتدائية';
+  subjects=[makeSubject('الرياضيات',{veryLow:12,low:28,medium:38,high:22,schoolAvg:68.4,adminAvg:66.9,kingdomAvg:67.6,mastery:60,target:70,target2030:80,domains:[{name:'الأعداد والعمليات',value:72,benchmark:70},{name:'الهندسة والقياس',value:64,benchmark:66},{name:'الجبر',value:59,benchmark:68}]}),makeSubject('القراءة',{veryLow:10,low:24,medium:42,high:24,schoolAvg:70.2,adminAvg:68.7,kingdomAvg:69.1,mastery:66,target:72,target2030:82,domains:[{name:'استيعاب المقروء',value:74,benchmark:70},{name:'دلالات الألفاظ',value:62,benchmark:68}]})];
+  renderSubjects();v6ResetReview();show('#editSection');setStatus('تم تحميل بيانات افتراضية عامة للتجربة؛ لا ترتبط بأي مدرسة أو مستخدم.','good');setTimeout(()=>$('#editSection').scrollIntoView({behavior:'smooth'}),120);
+}
+
+$('#demoBtn').onclick=v6Demo;
+$('#analyzeBtn').onclick=()=>{if(!v6ReviewReady())return;const d=capture(),a=v6Analyze(d);v6RenderAnalysis(d,a)};
+$('#toReport').onclick=()=>{if(!v6ReviewReady())return;v6BuildReport(capture())};
+$('#printBtn').onclick=()=>window.print();
+$('#fileInput').addEventListener('change',v6ResetReview);
+document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#editSection')&&e.target.id!=='reviewConfirmed')v6ResetReview()});
+
 initSubjects();
 })();
 </script>
