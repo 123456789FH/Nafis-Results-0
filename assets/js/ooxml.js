@@ -142,33 +142,18 @@ function valueText(value, suffix = '') {
   return value === null || value === undefined || value === '' ? '—' : `${value}${suffix}`;
 }
 
-function classificationText(severity) {
-  return ({ remedial: 'علاجي', improvement: 'تحسين', sustain: 'محافظة على القوة', diagnostic: 'غير مكتمل' })[severity] || severity || '—';
-}
-
 export function buildDocx(data, analysis, worksheets = []) {
   const metaRows = [
     ['البيان', 'القيمة'],
-    ['المدرسة', data.school || '—'],
-    ['الرقم الوزاري', data.ministerialId || '—'],
-    ['الصف', data.gradeName || data.grade || '—'],
-    ['العام الدراسي', valueText(data.academicYear)],
-    ['سنة القياس', valueText(data.measurementYear)],
-    ['عدد الطلبة', valueText(data.total)],
-    ['المختبرون', valueText(data.tested)],
-    ['إدارة التعليم', data.educationAdministration || '—'],
-    ['المنطقة', data.region || '—'],
-    ['نوع المدرسة', data.schoolType || 'غير محدد'],
-    ['الإتقان العام', valueText(data.overallMastery, '٪')],
-    ['مقدار التغير العام', valueText(data.overallChange, ' نقطة')]
+    ['المدرسة', data.school || '—'], ['الصف', data.gradeName || data.grade || '—'], ['العام الدراسي', valueText(data.year)],
+    ['عدد الطلبة', valueText(data.total)], ['المختبرون', valueText(data.tested)], ['الجهة', data.region || '—']
   ];
   let body = paragraph('لوحة تحليل نتائج نافس وخطة رفع مستوى الأداء', { style: 'Title', bold: true, size: 34, after: 180 });
   body += paragraph(data.school || 'المدرسة', { style: 'Subtitle', bold: true, size: 28, after: 180 });
   body += table(metaRows, [2200, 6500]);
   body += paragraph('الملخص التنفيذي', { style: 'Heading1', bold: true, size: 28, after: 100 });
   body += paragraph(`نسبة المشاركة: ${valueText(analysis.executive.participation, '٪')}، متوسط الإتقان عبر المواد: ${valueText(analysis.executive.averageMastery, '٪')}، ومتوسط الدرجات المقروءة: ${valueText(analysis.executive.averageScore, ' درجة')}.`, { size: 22 });
-  const topAction = analysis.actionUnits?.[0];
-  if (topAction) body += paragraph(`الأولوية الأعلى: ${topAction.subject} — ${topAction.domain}. ${topAction.reason}`, { size: 22 });
+  if (analysis.executive.weakest) body += paragraph(`الأولوية الأعلى: ${analysis.executive.weakest.subject} — ${analysis.executive.weakest.domain}. ${analysis.executive.weakest.reason}`, { size: 22 });
   body += paragraph('ملخص المواد', { style: 'Heading1', bold: true, size: 28 });
   body += table([
     ['المادة', 'متوسط الدرجة', 'الإتقان', 'منخفض جدًا', 'منخفض', 'متوسط', 'مرتفع'],
@@ -178,12 +163,9 @@ export function buildDocx(data, analysis, worksheets = []) {
   for (const subject of analysis.subjects) {
     body += paragraph(`مجالات ${subject.name}`, { style: 'Heading2', bold: true, size: 25 });
     body += table([
-      ['المجال', 'المدرسة', 'إدارة التعليم', 'المملكة', 'المستهدف', 'التصنيف'],
-      ...(subject.domains || []).map(domain => {
-        const priority = analysis.priorities.find(item => item.subject === subject.name && item.domain === domain.name);
-        return [domain.name, valueText(domain.value, '٪'), valueText(domain.admin, '٪'), valueText(domain.kingdom, '٪'), valueText(domain.benchmark, '٪'), classificationText(priority?.severity)];
-      })
-    ], [3000, 1100, 1300, 1100, 1100, 1300]);
+      ['المجال', 'المدرسة', 'إدارة التعليم', 'المملكة', 'المستهدف'],
+      ...(subject.domains || []).map(domain => [domain.name, valueText(domain.value, '٪'), valueText(domain.admin, '٪'), valueText(domain.kingdom, '٪'), valueText(domain.benchmark, '٪')])
+    ], [3600, 1200, 1400, 1200, 1200]);
   }
 
   body += paragraph('الأولويات وخطط التحسين', { style: 'Heading1', bold: true, size: 28 });
@@ -197,13 +179,6 @@ export function buildDocx(data, analysis, worksheets = []) {
       ['محك النجاح', unit.successCriterion]
     ], [1900, 6900]);
   });
-
-  if (analysis.strengths?.length) {
-    body += paragraph('مجالات المحافظة على القوة', { style: 'Heading2', bold: true, size: 24 });
-    analysis.strengths.forEach(item => {
-      body += paragraph(`${item.subject} — ${item.domain}: ${item.reason} الإجراء: تثبيت الممارسة الناجحة والمتابعة الدورية والإثراء.`, { size: 20, after: 60 });
-    });
-  }
 
   body += paragraph('الخطة الزمنية لأربعة أسابيع', { style: 'Heading1', bold: true, size: 28 });
   body += table([['الأسبوع', 'المحور', 'المهام'], ...analysis.timeline.map(item => [item.week, item.title, item.tasks])], [1500, 2200, 5000]);
@@ -255,30 +230,16 @@ function sheetXml(rows) {
 
 export function buildXlsx(data, analysis) {
   const metadata = [
-    ['البيان', 'القيمة'],
-    ['المدرسة', data.school || ''],
-    ['الرقم الوزاري', data.ministerialId || ''],
-    ['الصف', data.gradeName || data.grade || ''],
-    ['العام الدراسي', data.academicYear ?? ''],
-    ['سنة القياس', data.measurementYear ?? ''],
-    ['عدد الطلبة', data.total ?? ''],
-    ['المختبرون', data.tested ?? ''],
-    ['إدارة التعليم', data.educationAdministration || ''],
-    ['المنطقة', data.region || ''],
-    ['نوع المدرسة', data.schoolType || 'غير محدد'],
-    ['المؤشر العام', data.overallMastery ?? ''],
-    ['مقدار التغير العام', data.overallChange ?? '']
+    ['البيان', 'القيمة'], ['المدرسة', data.school || ''], ['الرقم الوزاري', data.ministerialId || ''], ['الصف', data.gradeName || data.grade || ''],
+    ['العام الدراسي', data.year ?? ''], ['عدد الطلبة', data.total ?? ''], ['المختبرون', data.tested ?? ''], ['الجهة', data.region || ''],
+    ['المؤشر العام', data.overallMastery ?? ''], ['مقدار التغير', data.change ?? '']
   ];
   const subjectRows = [['المادة', 'متوسط الدرجة', 'تغير المتوسط', 'الإتقان', 'تغير الإتقان', 'منخفض جدًا', 'منخفض', 'متوسط', 'مرتفع']];
   analysis.subjects.forEach(subject => subjectRows.push([subject.name, subject.schoolAvg ?? '', subject.averageChange ?? '', subject.mastery ?? '', subject.masteryChange ?? '', subject.veryLow ?? '', subject.low ?? '', subject.medium ?? '', subject.high ?? '']));
-  const domainRows = [['المادة', 'المجال', 'المدرسة', 'إدارة التعليم', 'المملكة', 'المستهدف', 'التصنيف']];
-  analysis.subjects.forEach(subject => (subject.domains || []).forEach(domain => {
-    const priority = analysis.priorities.find(item => item.subject === subject.name && item.domain === domain.name);
-    domainRows.push([subject.name, domain.name, domain.value ?? '', domain.admin ?? '', domain.kingdom ?? '', domain.benchmark ?? '', classificationText(priority?.severity)]);
-  }));
+  const domainRows = [['المادة', 'المجال', 'المدرسة', 'إدارة التعليم', 'المملكة', 'المستهدف']];
+  analysis.subjects.forEach(subject => (subject.domains || []).forEach(domain => domainRows.push([subject.name, domain.name, domain.value ?? '', domain.admin ?? '', domain.kingdom ?? '', domain.benchmark ?? ''])));
   const priorityRows = [['الترتيب', 'المادة', 'المجال', 'الأداء', 'المرجع', 'الفجوة', 'التصنيف', 'محك النجاح']];
-  analysis.actionUnits.forEach(unit => priorityRows.push([unit.order, unit.subject, unit.domain, unit.value ?? '', unit.reference ?? '', unit.gap ?? '', classificationText(unit.severity), unit.successCriterion]));
-  analysis.strengths?.forEach(item => priorityRows.push(['', item.subject, item.domain, item.value ?? '', item.reference ?? '', item.gap ?? '', 'محافظة على القوة', 'تثبيت الممارسة والمتابعة الدورية والإثراء']));
+  analysis.actionUnits.forEach(unit => priorityRows.push([unit.order, unit.subject, unit.domain, unit.value ?? '', unit.reference ?? '', unit.gap ?? '', unit.severity, unit.successCriterion]));
   const sheets = [
     { name: 'البيانات', rows: metadata }, { name: 'المواد', rows: subjectRows }, { name: 'المجالات', rows: domainRows }, { name: 'الأولويات', rows: priorityRows }
   ];
@@ -318,7 +279,7 @@ export function buildPptx(data, analysis) {
     textBox(2, 'Title', 900000, 1350000, 10400000, 1600000, [
       { text: 'تحليل نتائج نافس وخطة التحسين', size: 3600, bold: true, color: '0B6B52', align: 'ctr' },
       { text: data.school || 'المدرسة', size: 2600, bold: true, color: '183C33', align: 'ctr' },
-      { text: `${data.gradeName || ''} · العام الدراسي ${data.academicYear || '—'} · سنة القياس ${data.measurementYear || '—'}`, size: 2000, color: '5B746C', align: 'ctr' }
+      { text: `${data.gradeName || ''} · ${data.year || ''}`, size: 2000, color: '5B746C', align: 'ctr' }
     ]) + textBox(3, 'Footer', 1400000, 5600000, 9200000, 550000, [{ text: 'أ/ فاطمة هزازي · ملتقى معلمي ومعلمات الرياضيات · ملتقى التعليم التفاعلي', size: 1500, color: '55736A', align: 'ctr' }]), 'EEF9F5'));
 
   const exec = analysis.executive;
@@ -349,7 +310,7 @@ export function buildPptx(data, analysis) {
   let prioritiesShapes = textBox(2, 'Title', 750000, 280000, 10600000, 650000, [{ text: 'الأولويات الأعلى', size: 3000, bold: true, color: '0B6B52' }]);
   analysis.actionUnits.slice(0, 4).forEach((unit, index) => {
     prioritiesShapes += textBox(3 + index, `Priority${index}`, 750000, 1100000 + index * 1250000, 10600000, 1000000, [
-      { text: `${unit.order}. ${unit.subject} — ${unit.domain}`, size: 2050, bold: true, color: unit.severity === 'remedial' ? 'A53B35' : '7A5A13' },
+      { text: `${unit.order}. ${unit.subject} — ${unit.domain}`, size: 2050, bold: true, color: unit.severity === 'high' ? 'A53B35' : '7A5A13' },
       { text: unit.reason, size: 1650, color: '405E55' }
     ], { fill: 'FFFFFF', line: 'DCE8E3', radius: true });
   });

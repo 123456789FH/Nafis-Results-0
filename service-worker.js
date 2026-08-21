@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'nafis-secure-v7.1.0-shell';
+const CACHE_NAME = 'nafis-secure-v7.0.2-connected-shell';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './assets/css/app.css',

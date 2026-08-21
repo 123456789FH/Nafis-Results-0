@@ -527,35 +527,22 @@ export function parseNafisDocument(inputPages, options = {}) {
   const allText = pages.map(page => page.text || '').join(' ');
   const grade = detectGrade(gradeRaw) || detectGrade(first.text) || detectGrade(allText) || options.gradeHint || '';
 
-  const academicYear = cleanMetadataValue(valueBelowLabel(first, ['العام الدراسي', 'العام الدرايس'])) || '';
-  const measurementYears = (overall.history || []).map(item => Number(item?.year)).filter(year => Number.isInteger(year) && year >= 2000 && year <= 2100);
-  const measurementYear = measurementYears.length ? Math.max(...measurementYears) : (parseNumber(academicYear) >= 2000 ? parseNumber(academicYear) : '');
-  const educationAdministration = cleanMetadataValue(valueBelowLabel(first, ['ادارة التعليم', 'إدارة التعليم']));
-  const region = cleanMetadataValue(valueBelowLabel(first, ['المنطقة', 'املنطقة']));
-  const schoolTypeRaw = cleanMetadataValue(valueBelowLabel(first, ['نوع المدرسة', 'نوع املدرسة']));
-  const schoolType = ['حكومي', 'أهلي', 'عالمي'].includes(schoolTypeRaw) ? schoolTypeRaw : 'غير محدد';
-  const overallChange = signedNumberNearLabel(first, ['مقدار التغير', 'مقدار التغري']) ?? '';
-
   const data = {
     school,
     ministerialId: valueBelowLabel(first, ['الرقم الوزاري']),
     gender: cleanMetadataValue(valueBelowLabel(first, ['جنس المدرسة', 'جنس املدرسة'])) || 'غير محدد',
-    schoolType,
-    educationAdministration,
-    region,
-    area: region,
+    region: cleanMetadataValue(valueBelowLabel(first, ['ادارة التعليم', 'إدارة التعليم'])),
+    area: cleanMetadataValue(valueBelowLabel(first, ['المنطقة', 'املنطقة'])),
     stage: GRADE_PROFILES[grade]?.stage || cleanMetadataValue(valueBelowLabel(first, ['المرحلة الدراسية', 'املرحلة الدراسية'])) || '',
     grade,
     gradeName: canonicalGradeName(grade),
-    academicYear,
-    measurementYear,
-    year: measurementYear || (parseNumber(academicYear) ?? fallback.year ?? ''),
+    year: parseNumber(valueBelowLabel(first, ['العام الدراسي', 'العام الدرايس'])) ?? fallback.year ?? '',
     total: parseNumber(valueBelowLabel(first, ['عدد الطلبة الاجمالي', 'عدد الطلبة اإلجمالي', 'عدد الطلبة اإلجمايل'])) ?? fallback.total ?? '',
     tested: parseNumber(valueBelowLabel(first, ['المختبرين', 'املختربين', 'املختبر ين'])) ?? fallback.tested ?? '',
-    overallChange,
-    change: overallChange,
+    change: signedNumberNearLabel(first, ['مقدار التغير', 'مقدار التغري']) ?? '',
     overallMastery: overall.current ?? '',
     overallHistory: overall.history,
+    schoolType: 'حكومي',
     subjects: [],
     source: options.source || 'pdf-text',
     pageCount: pages.length,
@@ -589,11 +576,9 @@ export function makeBlankSubject(name = 'الرياضيات') {
 
 export function makeBlankData() {
   return {
-    school: '', ministerialId: '', gender: 'غير محدد', schoolType: 'غير محدد',
-    educationAdministration: '', region: '', area: '', stage: '',
-    grade: '', gradeName: '', academicYear: '', measurementYear: '', year: '',
-    total: '', tested: '', overallChange: '', change: '', overallMastery: '',
-    overallHistory: [], subjects: [], source: 'manual', pageCount: 0,
+    school: '', ministerialId: '', gender: 'غير محدد', region: '', area: '', stage: GRADE_PROFILES.g3.stage,
+    grade: 'g3', gradeName: GRADE_PROFILES.g3.name, year: '', total: '', tested: '', change: '', overallMastery: '',
+    overallHistory: [], schoolType: 'حكومي', subjects: [makeBlankSubject('الرياضيات')], source: 'manual', pageCount: 0,
     parsedAt: new Date().toISOString()
   };
 }
@@ -646,6 +631,6 @@ export function makeDemoData(grade = 'g6') {
     stage: GRADE_PROFILES[resolvedGrade].stage, grade: resolvedGrade, gradeName: GRADE_PROFILES[resolvedGrade].name, year: 1448,
     total: 60, tested: 58, change: 3.5, overallMastery: 42,
     overallHistory: [{ year: 2026, value: 42 }, { year: 2025, value: 38.5 }],
-    schoolType: 'غير محدد', source: 'demo', pageCount: 0, parsedAt: new Date().toISOString(), subjects
+    schoolType: 'حكومي', source: 'demo', pageCount: 0, parsedAt: new Date().toISOString(), subjects
   };
 }
