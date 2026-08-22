@@ -95,22 +95,31 @@ function priorityFor(subject, domain, subjectIndex, domainIndex) {
 
   if (value !== null) {
     if (gap !== null) {
-      if (gap <= APP_CONFIG.priorityThresholds.remedialGap) severity = 'remedial';
-      else if (gap < APP_CONFIG.priorityThresholds.improvementGap) severity = 'improvement';
+      const t = APP_CONFIG.priorityThresholds;
+      // لا يكفي التفوق الطفيف على مرجع منخفض لاعتبار المجال «قوة».
+      // التصنيف يجمع بين مستوى المدرسة المطلق وحجم الفجوة المرجعية.
+      if (value < t.remedialAbsolute || gap <= t.remedialGap) severity = 'remedial';
+      else if (value < t.improvementAbsolute || gap < t.improvementGap) severity = 'improvement';
       else severity = 'sustain';
-      score = round1(Math.min(100, Math.max(0, -gap) * 2 + Math.max(0, 65 - value) * 0.35));
-      if (severity === 'remedial') reason = `الأداء ${value}٪، بفجوة ${Math.abs(gap)} نقطة عن ${reference.label}؛ أولوية علاجية.`;
-      else if (severity === 'improvement') reason = `الأداء ${value}٪، بفجوة ${Math.abs(gap)} نقطة عن ${reference.label}؛ مجال تحسين.`;
-      else reason = gap >= 0
-        ? `الأداء ${value}٪، ويتجاوز ${reference.label} بمقدار ${gap} نقطة؛ مجال قوة يُحافظ عليه.`
-        : `الأداء ${value}٪، قريب من ${reference.label} بفارق ${Math.abs(gap)} نقطة؛ محافظة ومتابعة.`;
+      score = round1(Math.min(100, Math.max(0, -gap) * 1.7 + Math.max(0, t.improvementAbsolute - value) * 0.8));
+      if (severity === 'remedial') {
+        const cause = value < t.remedialAbsolute ? `المستوى المطلق منخفض (${value}٪)` : `الفجوة كبيرة (${Math.abs(gap)} نقطة)`;
+        reason = `${cause} مقارنة بـ${reference.label}؛ أولوية علاجية.`;
+      } else if (severity === 'improvement') {
+        if (gap >= 0) reason = `الأداء ${value}٪ ويتجاوز ${reference.label} بمقدار ${gap} نقطة، لكنه دون مستوى المحافظة على القوة (${t.improvementAbsolute}٪)؛ مجال تحسين.`;
+        else reason = `الأداء ${value}٪، بفجوة ${Math.abs(gap)} نقطة عن ${reference.label}؛ مجال تحسين.`;
+      } else {
+        reason = gap >= 0
+          ? `الأداء ${value}٪، ويتجاوز ${reference.label} بمقدار ${gap} نقطة مع مستوى مطلق مرتفع؛ مجال قوة يُحافظ عليه.`
+          : `الأداء ${value}٪ قريب من ${reference.label} وبمستوى مطلق مرتفع؛ محافظة ومتابعة.`;
+      }
     } else {
       if (value < APP_CONFIG.priorityThresholds.remedialAbsolute) severity = 'remedial';
       else if (value < APP_CONFIG.priorityThresholds.improvementAbsolute) severity = 'improvement';
       else severity = 'sustain';
       score = round1(Math.max(0, 70 - value));
       reason = severity === 'remedial'
-        ? `الأداء ${value}٪ دون ٥٠٪ ولا تتوفر قيمة مرجعية مكتملة؛ أولوية علاجية.`
+        ? `الأداء ${value}٪ دون ${APP_CONFIG.priorityThresholds.remedialAbsolute}٪ ولا تتوفر قيمة مرجعية مكتملة؛ أولوية علاجية.`
         : severity === 'improvement'
           ? `الأداء ${value}٪ ويحتاج رفعًا تدريجيًا؛ لا تتوفر قيمة مرجعية مكتملة.`
           : `الأداء ${value}٪؛ يُحافظ على الممارسة الناجحة مع متابعة دورية.`;

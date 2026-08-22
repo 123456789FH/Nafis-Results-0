@@ -1,9 +1,10 @@
 'use strict';
 
-const CACHE_NAME = 'nafis-results-0-v7.1.3-ai-secure-clean-footer';
+const CACHE_NAME = 'nafis-results-v7.1.4-pptx-analysis-fix';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './assets/css/app.css',
+  './assets/vendor/pptxgen.bundle.js',
   './assets/js/app.js', './assets/js/ai-reader.js', './assets/js/runtime-config.js', './assets/js/pwa.js', './assets/js/config.js', './assets/js/file-reader.js',
   './assets/js/parser.js', './assets/js/analysis.js', './assets/js/worksheets.js',
   './assets/js/worksheets-g9.js', './assets/js/ooxml.js',

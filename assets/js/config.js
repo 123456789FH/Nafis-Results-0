@@ -1,7 +1,7 @@
 export const APP_CONFIG = Object.freeze({
   name: 'محلل نتائج نافس وخطة التحسين',
-  version: '٧٫١٫٣ AI الآمن',
-  versionCode: '7.1.3-ai-secure-nafis-results-0',
+  version: '٧٫١٫٤ AI الآمن',
+  versionCode: '7.1.4-ai-secure-nafis-results-0',
   ownerName: 'أ/ فاطمة هزازي',
   communities: Object.freeze([
     'ملتقى معلمي ومعلمات الرياضيات',
@@ -29,7 +29,7 @@ export const APP_CONFIG = Object.freeze({
   tesseractLangPath: 'https://tessdata.projectnaptha.com/4.0.0_best_int',
 
   levelSumTolerance: 1.5,
-  priorityThresholds: Object.freeze({ remedialGap: -10, improvementGap: -2, remedialAbsolute: 50, improvementAbsolute: 65 }),
+  priorityThresholds: Object.freeze({ remedialGap: -15, improvementGap: -3, remedialAbsolute: 40, improvementAbsolute: 65 }),
 
   grades: Object.freeze({
     g3: Object.freeze({

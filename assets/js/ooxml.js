@@ -312,79 +312,128 @@ function slideXml(shapes, background = 'F7FBF9') {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="${background}"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>${shapes}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`;
 }
 
-export function buildPptx(data, analysis) {
-  const slides = [];
-  slides.push(slideXml(
-    textBox(2, 'Title', 900000, 1350000, 10400000, 1600000, [
-      { text: 'تحليل نتائج نافس وخطة التحسين', size: 3600, bold: true, color: '0B6B52', align: 'ctr' },
-      { text: data.school || 'المدرسة', size: 2600, bold: true, color: '183C33', align: 'ctr' },
-      { text: `${data.gradeName || ''} · العام الدراسي ${data.academicYear || '—'} · سنة القياس ${data.measurementYear || '—'}`, size: 2000, color: '5B746C', align: 'ctr' }
-    ]) + textBox(3, 'Footer', 1400000, 5600000, 9200000, 550000, [{ text: 'أ/ فاطمة هزازي · ملتقى معلمي ومعلمات الرياضيات · ملتقى التعليم التفاعلي', size: 1500, color: '55736A', align: 'ctr' }]), 'EEF9F5'));
+export async function buildPptx(data, analysis) {
+  const PptxGenJS = globalThis.PptxGenJS;
+  if (typeof PptxGenJS !== 'function') throw new Error('مكتبة PowerPoint لم تُحمّل. حدّثي الصفحة ثم أعيدي المحاولة.');
 
-  const exec = analysis.executive;
-  const cards = [
-    ['نسبة المشاركة', valueText(exec.participation, '٪')], ['متوسط الإتقان', valueText(exec.averageMastery, '٪')],
-    ['متوسط الدرجات', valueText(exec.averageScore, ' درجة')], ['المؤشر العام', valueText(exec.overallMastery, '٪')]
-  ];
-  let dashboardShapes = textBox(2, 'Title', 750000, 300000, 10600000, 700000, [{ text: 'لوحة المؤشرات', size: 3000, bold: true, color: '0B6B52' }]);
-  cards.forEach((card, index) => {
-    const x = 700000 + (index % 2) * 5700000;
-    const y = 1350000 + Math.floor(index / 2) * 1900000;
-    dashboardShapes += textBox(3 + index, `Card${index}`, x, y, 5100000, 1450000, [
-      { text: card[0], size: 1900, bold: true, color: '55736A', align: 'ctr' },
-      { text: card[1], size: 3400, bold: true, color: '0B6B52', align: 'ctr' }
-    ], { fill: 'FFFFFF', line: 'D6E7E0', radius: true });
-  });
-  slides.push(slideXml(dashboardShapes));
-
-  let subjectsShapes = textBox(2, 'Title', 750000, 280000, 10600000, 650000, [{ text: 'ملخص المواد', size: 3000, bold: true, color: '0B6B52' }]);
-  analysis.subjects.slice(0, 3).forEach((subject, index) => {
-    subjectsShapes += textBox(3 + index, `Subject${index}`, 800000, 1150000 + index * 1550000, 10400000, 1250000, [
-      { text: subject.name, size: 2300, bold: true, color: '6252A2' },
-      { text: `متوسط الدرجة: ${valueText(subject.schoolAvg, ' درجة')}   |   الإتقان: ${valueText(subject.mastery, '٪')}   |   المنخفض والمنخفض جدًا: ${valueText((Number(subject.veryLow) || 0) + (Number(subject.low) || 0), '٪')}`, size: 1850, color: '183C33' }
-    ], { fill: 'FFFFFF', line: 'DCE8E3', radius: true });
-  });
-  slides.push(slideXml(subjectsShapes));
-
-  let prioritiesShapes = textBox(2, 'Title', 750000, 280000, 10600000, 650000, [{ text: 'الأولويات الأعلى', size: 3000, bold: true, color: '0B6B52' }]);
-  analysis.actionUnits.slice(0, 4).forEach((unit, index) => {
-    prioritiesShapes += textBox(3 + index, `Priority${index}`, 750000, 1100000 + index * 1250000, 10600000, 1000000, [
-      { text: `${unit.order}. ${unit.subject} — ${unit.domain}`, size: 2050, bold: true, color: unit.severity === 'remedial' ? 'A53B35' : '7A5A13' },
-      { text: unit.reason, size: 1650, color: '405E55' }
-    ], { fill: 'FFFFFF', line: 'DCE8E3', radius: true });
-  });
-  slides.push(slideXml(prioritiesShapes));
-
-  let timelineShapes = textBox(2, 'Title', 750000, 280000, 10600000, 650000, [{ text: 'الخطة الزمنية لأربعة أسابيع', size: 3000, bold: true, color: '0B6B52' }]);
-  analysis.timeline.forEach((item, index) => {
-    const x = 650000 + index * 2870000;
-    timelineShapes += textBox(3 + index, `Week${index}`, x, 1350000, 2500000, 3600000, [
-      { text: item.week, size: 2050, bold: true, color: 'FFFFFF', align: 'ctr' },
-      { text: item.title, size: 1850, bold: true, color: '183C33', align: 'ctr' },
-      { text: item.tasks, size: 1500, color: '405E55', align: 'r' }
-    ], { fill: index % 2 ? 'EAF6F2' : 'E9F4FA', line: 'C9DDD5', radius: true, anchor: 't' });
-  });
-  slides.push(slideXml(timelineShapes));
-
-  const files = {
-    '[Content_Types].xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>${slides.map((_, index) => `<Override PartName="/ppt/slides/slide${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`).join('')}<Override PartName="/ppt/presProps.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presProps+xml"/><Override PartName="/ppt/viewProps.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml"/><Override PartName="/ppt/tableStyles.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`,
-    '_rels/.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>`,
-    'docProps/core.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>عرض تحليل نتائج نافس</dc:title><dc:creator>أ/ فاطمة هزازي</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created></cp:coreProperties>`,
-    'docProps/app.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>محلل نتائج نافس الآمن</Application><Slides>${slides.length}</Slides></Properties>`,
-    'ppt/presentation.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>${slides.map((_, index) => `<p:sldId id="${256 + index}" r:id="rId${index + 2}"/>`).join('')}</p:sldIdLst><p:sldSz cx="12192000" cy="6858000" type="screen16x9"/><p:notesSz cx="6858000" cy="9144000"/><p:defaultTextStyle><a:defPPr><a:defRPr lang="ar-SA"/></a:defPPr></p:defaultTextStyle></p:presentation>`,
-    'ppt/_rels/presentation.xml.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>${slides.map((_, index) => `<Relationship Id="rId${index + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${index + 1}.xml"/>`).join('')}<Relationship Id="rId${slides.length + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps" Target="presProps.xml"/><Relationship Id="rId${slides.length + 3}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps" Target="viewProps.xml"/><Relationship Id="rId${slides.length + 4}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles" Target="tableStyles.xml"/></Relationships>`,
-    'ppt/slideMasters/slideMaster1.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld name=""><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:clrMap accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" bg1="lt1" bg2="lt2" folHlink="folHlink" hlink="hlink" tx1="dk1" tx2="dk2"/><p:sldLayoutIdLst><p:sldLayoutId id="1" r:id="rId1"/></p:sldLayoutIdLst><p:txStyles><p:titleStyle/><p:bodyStyle/><p:otherStyle/></p:txStyles></p:sldMaster>`,
-    'ppt/slideMasters/_rels/slideMaster1.xml.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/></Relationships>`,
-    'ppt/slideLayouts/slideLayout1.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" type="blank" preserve="1"><p:cSld name="Blank"><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`,
-    'ppt/slideLayouts/_rels/slideLayout1.xml.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>`,
-    'ppt/theme/theme1.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Nafis"><a:themeElements><a:clrScheme name="Nafis"><a:dk1><a:srgbClr val="183C33"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="405E55"/></a:dk2><a:lt2><a:srgbClr val="F7FBF9"/></a:lt2><a:accent1><a:srgbClr val="0B6B52"/></a:accent1><a:accent2><a:srgbClr val="168FB7"/></a:accent2><a:accent3><a:srgbClr val="79BB37"/></a:accent3><a:accent4><a:srgbClr val="EE7D21"/></a:accent4><a:accent5><a:srgbClr val="6252A2"/></a:accent5><a:accent6><a:srgbClr val="C99828"/></a:accent6><a:hlink><a:srgbClr val="0563C1"/></a:hlink><a:folHlink><a:srgbClr val="954F72"/></a:folHlink></a:clrScheme><a:fontScheme name="Arial"><a:majorFont><a:latin typeface="Arial"/><a:ea typeface=""/><a:cs typeface="Arial"/></a:majorFont><a:minorFont><a:latin typeface="Arial"/><a:ea typeface=""/><a:cs typeface="Arial"/></a:minorFont></a:fontScheme><a:fmtScheme name="Nafis"><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:fillStyleLst><a:lnStyleLst><a:ln w="6350"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements><a:objectDefaults/><a:extraClrSchemeLst/></a:theme>`,
-    'ppt/presProps.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentationPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"/>`,
-    'ppt/viewProps.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:viewPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:normalViewPr/><p:slideViewPr/><p:notesTextViewPr/></p:viewPr>`,
-    'ppt/tableStyles.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><a:tblStyleLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" def="{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}"/>`
+  const pptx = new PptxGenJS();
+  pptx.layout = 'LAYOUT_WIDE';
+  pptx.author = 'أ/ فاطمة هزازي';
+  pptx.company = 'ملتقى التعليم التفاعلي';
+  pptx.subject = 'تحليل نتائج نافس وخطة التحسين';
+  pptx.title = `تحليل نتائج نافس - ${data.school || 'المدرسة'}`;
+  pptx.lang = 'ar-SA';
+  pptx.rtlMode = true;
+  pptx.theme = {
+    headFontFace: 'Arial', bodyFontFace: 'Arial', lang: 'ar-SA'
   };
-  slides.forEach((slide, index) => {
-    files[`ppt/slides/slide${index + 1}.xml`] = slide;
-    files[`ppt/slides/_rels/slide${index + 1}.xml.rels`] = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/></Relationships>`;
+
+  const C = { green: '0B6B52', green2: '118667', ink: '183C33', muted: '5B746C', soft: 'F4FAF7', line: 'D6E7E0', purple: '6252A2', red: 'A53B35', gold: '9A6A08', white: 'FFFFFF', blue: '168FB7' };
+  const addText = (slide, text, opts = {}) => slide.addText(arabicizeText(text ?? ''), {
+    fontFace: 'Arial', color: C.ink, fontSize: 20, margin: 0.08,
+    rtlMode: true, breakLine: false, valign: 'mid', align: 'right',
+    fit: 'shrink', ...opts
   });
-  return zipStore(files);
+  const addTitle = (slide, title, subtitle = '') => {
+    slide.background = { color: 'F7FBF9' };
+    slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 13.333, h: 0.16, line: { color: C.green }, fill: { color: C.green } });
+    addText(slide, title, { x: 0.65, y: 0.38, w: 12, h: 0.55, fontSize: 27, bold: true, color: C.green });
+    if (subtitle) addText(slide, subtitle, { x: 0.65, y: 0.94, w: 12, h: 0.35, fontSize: 12.5, color: C.muted });
+  };
+  const addFooter = slide => addText(slide, 'أ/ فاطمة هزازي · ملتقى معلمي ومعلمات الرياضيات · ملتقى التعليم التفاعلي', { x: 0.6, y: 7.08, w: 12.1, h: 0.22, fontSize: 9.5, color: C.muted, align: 'center' });
+  const card = (slide, x, y, w, h, title, value, color = C.green) => {
+    slide.addShape(pptx.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.06, line: { color: C.line, pt: 1 }, fill: { color: C.white }, radius: 0.06 });
+    addText(slide, title, { x: x+0.15, y: y+0.15, w: w-0.3, h: 0.28, fontSize: 11, bold: true, color: C.muted, align: 'center' });
+    addText(slide, value, { x: x+0.15, y: y+0.55, w: w-0.3, h: h-0.7, fontSize: 24, bold: true, color, align: 'center' });
+  };
+
+  // 1: cover
+  {
+    const slide = pptx.addSlide();
+    slide.background = { color: 'EEF9F5' };
+    slide.addShape(pptx.ShapeType.roundRect, { x: 0.7, y: 0.8, w: 11.9, h: 5.5, line: { color: 'CFE4DC', pt: 1 }, fill: { color: C.white } });
+    addText(slide, 'تحليل نتائج نافس وخطة التحسين', { x: 1.1, y: 1.45, w: 11.1, h: 0.8, fontSize: 31, bold: true, color: C.green, align: 'center' });
+    addText(slide, data.school || 'المدرسة', { x: 1.1, y: 2.35, w: 11.1, h: 0.6, fontSize: 23, bold: true, align: 'center' });
+    addText(slide, `${data.gradeName || ''} · العام الدراسي ${data.academicYear || '—'} · سنة القياس ${data.measurementYear || '—'}`, { x: 1.1, y: 3.1, w: 11.1, h: 0.45, fontSize: 15, color: C.muted, align: 'center' });
+    addText(slide, `الرقم الوزاري: ${data.ministerialId || '—'}   |   إدارة التعليم: ${data.educationAdministration || '—'}   |   المنطقة: ${data.region || '—'}`, { x: 1.1, y: 3.75, w: 11.1, h: 0.5, fontSize: 12.5, color: C.muted, align: 'center' });
+    addText(slide, 'تقرير مدرسي مساند - مراجعة بشرية إلزامية قبل الاعتماد', { x: 1.2, y: 5.1, w: 10.9, h: 0.4, fontSize: 12, color: C.green, bold: true, align: 'center' });
+    addFooter(slide);
+  }
+
+  // 2: executive KPIs
+  {
+    const slide = pptx.addSlide();
+    addTitle(slide, 'الملخص التنفيذي', `${data.school || ''} · ${data.gradeName || ''}`);
+    const e = analysis.executive || {};
+    card(slide, 0.8, 1.55, 2.9, 1.55, 'المشاركة', valueText(e.participation, '٪'));
+    card(slide, 3.95, 1.55, 2.9, 1.55, 'متوسط الإتقان', valueText(e.averageMastery, '٪'));
+    card(slide, 7.1, 1.55, 2.9, 1.55, 'متوسط الدرجات', valueText(e.averageScore, ''));
+    card(slide, 10.25, 1.55, 2.25, 1.55, 'الإتقان العام', valueText(e.overallMastery, '٪'));
+    card(slide, 4.7, 3.55, 3.9, 1.5, 'التغير العام', valueText(e.overallChange, ' نقطة'), Number(e.overallChange) < 0 ? C.red : C.green);
+    if (analysis.actionUnits?.[0]) addText(slide, `الأولوية الأعلى: ${analysis.actionUnits[0].subject} - ${analysis.actionUnits[0].domain}`, { x: 1.2, y: 5.45, w: 10.9, h: 0.55, fontSize: 17, bold: true, color: C.red, align: 'center' });
+    addFooter(slide);
+  }
+
+  // 3: subjects
+  {
+    const slide = pptx.addSlide();
+    addTitle(slide, 'مؤشرات المواد', 'متوسط الدرجة، الإتقان، وتوزيع مستويات الأداء');
+    (analysis.subjects || []).slice(0,3).forEach((subject, i) => {
+      const y = 1.42 + i*1.72;
+      slide.addShape(pptx.ShapeType.roundRect, { x: 0.75, y, w: 11.85, h: 1.38, line: { color: C.line, pt: 1 }, fill: { color: C.white } });
+      addText(slide, subject.name, { x: 10.5, y:y+0.15, w:1.75, h:0.36, fontSize:18, bold:true, color:C.purple });
+      addText(slide, `متوسط الدرجة: ${valueText(subject.schoolAvg)}   |   الإتقان: ${valueText(subject.mastery,'٪')}   |   منخفض جدًا + منخفض: ${valueText((Number(subject.veryLow)||0)+(Number(subject.low)||0),'٪')}`, { x: 1.05, y:y+0.54, w:10.9, h:0.4, fontSize:14 });
+      addText(slide, `مرتفع ${valueText(subject.high,'٪')}   ·   متوسط ${valueText(subject.medium,'٪')}   ·   منخفض ${valueText(subject.low,'٪')}   ·   منخفض جدًا ${valueText(subject.veryLow,'٪')}`, { x: 1.05, y:y+0.95, w:10.9, h:0.28, fontSize:11.5, color:C.muted });
+    });
+    addFooter(slide);
+  }
+
+  // 4: domains and classification
+  {
+    const slide = pptx.addSlide();
+    addTitle(slide, 'المجالات والتصنيف', 'التصنيف يوازن بين الأداء المطلق والفجوة عن المرجع');
+    const rows = [];
+    for (const subject of analysis.subjects || []) for (const domain of subject.domains || []) {
+      const p = analysis.priorities.find(x => x.subject === subject.name && x.domain === domain.name);
+      rows.push([subject.name, domain.name, valueText(domain.value,'٪'), valueText(domain.kingdom,'٪'), classificationText(p?.severity)]);
+    }
+    const shown = rows.slice(0,9);
+    const y0=1.35, rowH=0.55;
+    const headers=['المادة','المجال','المدرسة','المملكة','التصنيف'];
+    const xs=[10.9,5.8,4.25,2.7,0.75], ws=[1.65,4.95,1.45,1.45,1.8];
+    headers.forEach((h,i)=>{ slide.addShape(pptx.ShapeType.rect,{x:xs[i],y:y0,w:ws[i],h:rowH,line:{color:C.line,pt:1},fill:{color:'DDEFE8'}}); addText(slide,h,{x:xs[i]+0.05,y:y0+0.05,w:ws[i]-0.1,h:rowH-0.1,fontSize:11,bold:true,align:'center'}); });
+    shown.forEach((r,ri)=>r.forEach((v,i)=>{const y=y0+(ri+1)*rowH; slide.addShape(pptx.ShapeType.rect,{x:xs[i],y,w:ws[i],h:rowH,line:{color:'E3ECE8',pt:0.7},fill:{color:C.white}}); addText(slide,v,{x:xs[i]+0.05,y:y+0.05,w:ws[i]-0.1,h:rowH-0.1,fontSize:10.5,align:i===1?'right':'center',color:i===4?(v==='علاجي'?C.red:v==='تحسين'?C.gold:C.green):C.ink,bold:i===4}); }));
+    addFooter(slide);
+  }
+
+  // 5: priorities
+  {
+    const slide = pptx.addSlide();
+    addTitle(slide, 'الأولويات وخطة التحسين', `علاجي: ${(analysis.priorities||[]).filter(x=>x.severity==='remedial').length} · تحسين: ${(analysis.priorities||[]).filter(x=>x.severity==='improvement').length} · محافظة على القوة: ${(analysis.priorities||[]).filter(x=>x.severity==='sustain').length}`);
+    (analysis.actionUnits || []).slice(0,5).forEach((unit,i)=>{
+      const y=1.35+i*1.05;
+      slide.addShape(pptx.ShapeType.roundRect,{x:0.75,y,w:11.85,h:0.86,line:{color:C.line,pt:1},fill:{color:C.white}});
+      addText(slide,`${unit.order}. ${unit.subject} - ${unit.domain}`,{x:7.5,y:y+0.12,w:4.65,h:0.28,fontSize:14,bold:true,color:unit.severity==='remedial'?C.red:C.gold});
+      addText(slide,unit.reason,{x:1.05,y:y+0.38,w:11.05,h:0.34,fontSize:10.5,color:C.muted});
+    });
+    addFooter(slide);
+  }
+
+  // 6: timeline
+  {
+    const slide = pptx.addSlide();
+    addTitle(slide, 'الخطة الزمنية', 'أربعة أسابيع للتشخيص والتدخل والقياس');
+    (analysis.timeline || []).slice(0,4).forEach((item,i)=>{
+      const x=0.72+i*3.12;
+      slide.addShape(pptx.ShapeType.roundRect,{x,y:1.55,w:2.75,h:4.55,line:{color:C.line,pt:1},fill:{color:i%2?'EAF6F2':'E9F4FA'}});
+      addText(slide,item.week,{x:x+0.12,y:1.85,w:2.5,h:0.45,fontSize:15,bold:true,color:C.green,align:'center'});
+      addText(slide,item.title,{x:x+0.12,y:2.48,w:2.5,h:0.6,fontSize:14,bold:true,align:'center'});
+      addText(slide,item.tasks,{x:x+0.2,y:3.25,w:2.35,h:2.3,fontSize:11,color:C.muted,valign:'top'});
+    });
+    addFooter(slide);
+  }
+
+  const result = await pptx.write({ outputType: 'arraybuffer', compression: true });
+  return new Uint8Array(result);
 }
+

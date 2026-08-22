@@ -148,8 +148,31 @@ function blankSubject(name, grade) {
   return subject;
 }
 
+
+function looksLikeEducationAdministration(value = '') {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  return /إدارة|الادارة|الإدارة|تعليم|التعليم/.test(text) && text.length > 8;
+}
+
+function reconcileMetadata(data = {}) {
+  const out = { ...data };
+  // حماية من عكس «إدارة التعليم» و«المنطقة» في القراءة البصرية.
+  if (looksLikeEducationAdministration(out.region) && !looksLikeEducationAdministration(out.educationAdministration)) {
+    const tmp = out.educationAdministration;
+    out.educationAdministration = out.region;
+    out.region = tmp || '';
+  }
+  // العام الدراسي الهجري لا يتحول إلى سنة القياس الميلادية.
+  if (hasValue(out.academicYear) && /^20\d{2}$/.test(String(out.academicYear).trim()) && !hasValue(out.measurementYear)) {
+    out.measurementYear = Number(out.academicYear);
+    out.academicYear = '';
+  }
+  return out;
+}
+
 function normalizeData(data, { fillExpectedSubjects = false } = {}) {
   const base = makeBlankData();
+  data = reconcileMetadata(data || {});
   const normalized = { ...base, ...(data || {}) };
   // توافق مع النسخ السابقة دون تثبيت أي بيانات: region القديمة كانت تعني إدارة التعليم، وarea كانت تعني المنطقة.
   if (!hasValue(normalized.educationAdministration) && hasValue(data?.region) && hasValue(data?.area)) {
@@ -637,7 +660,25 @@ async function handleFile(file, { forceOcr = false } = {}) {
       const aiData = { ...(ai.data || {}) };
       aiData.source = 'ai-secure';
       aiData.pageCount = aiData.pageCount || previewResult?.pages?.length || 0;
-      state.data = normalizeData(aiData);
+
+      // بيانات الصفحة الأولى المباشرة (العام الدراسي، الإدارة، المنطقة...)
+      // تُستخدم فقط لملء ما تركه AI فارغًا، ولا تستبدل نتائج المواد المقروءة بالذكاء الاصطناعي.
+      let localMetadata = null;
+      if (previewResult?.pages?.length) {
+        try {
+          localMetadata = parseNafisDocument(previewResult.pages, {
+            source: previewResult.extractionMode || 'pdf-text',
+            gradeHint: els.gradeHint.value || aiData.grade || ''
+          });
+        } catch (metadataError) {
+          console.warn('تعذر دمج بيانات الصفحة الأولى المحلية', metadataError);
+        }
+      }
+      const combinedData = localMetadata ? mergeParsedData(aiData, localMetadata) : aiData;
+      // لا نقبل نوع مدرسة افترضه النموذج ما لم يظهر حرفيًا في طبقة النص المحلية.
+      const localEvidenceText = String(previewResult?.rawText || (previewResult?.pages || []).map(page => page?.text || '').join(' '));
+      if (!/(حكومي|أهلي|عالمي)/.test(localEvidenceText)) combinedData.schoolType = 'غير محدد';
+      state.data = normalizeData(combinedData);
       state.sourceMode = 'ai-secure';
       state.warnings = [...state.warnings, ...(ai.warnings || [])];
       state.previews = previewResult?.previews || [];
@@ -995,7 +1036,7 @@ function downloadBlob(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 1800);
 }
 
-function exportOffice(type) {
+async function exportOffice(type) {
   if (!ensureExportReady()) return;
   try {
     let bytes;
@@ -1007,7 +1048,7 @@ function exportOffice(type) {
       bytes = buildXlsx(state.data, state.analysis);
       mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     } else {
-      bytes = buildPptx(state.data, state.analysis);
+      bytes = await buildPptx(state.data, state.analysis);
       mime = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
     }
     downloadBlob(new Blob([bytes], { type: mime }), safeDownloadName(type));
