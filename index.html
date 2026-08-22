@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b6b52">
-  <meta name="description" content="محلل آمن ومحلي لبطاقات نتائج نافس للصف الثالث الابتدائي والسادس الابتدائي والثالث المتوسط، مع مراجعة بشرية وخطة تحسين وتقارير قابلة للتصدير.">
+  <meta name="description" content="محلل آمن بالذكاء الاصطناعي لبطاقات نتائج نافس للصف الثالث الابتدائي والسادس الابتدائي والثالث المتوسط، يقرأ بيانات كل ملف بصورة مستقلة مع مراجعة بشرية وخطة تحسين وتقارير قابلة للتصدير.">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; worker-src 'self' blob: https://cdn.jsdelivr.net; child-src 'self' blob: https://cdn.jsdelivr.net; connect-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com https://*.workers.dev https://*.pages.dev; img-src 'self' data: blob:; style-src 'self'; style-src-elem 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
-  <title>محلل نتائج نافس بالذكاء الاصطناعي — الإصدار ٧</title>
+  <title>محلل نتائج نافس بالذكاء الاصطناعي — الإصدار ٧٫١٫٣</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
@@ -23,7 +23,6 @@
         <img src="assets/images/logo.jpg" alt="شعار محلل نتائج نافس" class="brandLogo" width="66" height="66">
         <div>
           <strong>محلل نتائج نافس وخطة التحسين</strong>
-          <span>الإصدار ٧٫٠٫٢ AI الآمن · قراءة متعددة الوسائط ومراجعة إلزامية</span>
         </div>
       </div>
       <div class="topBadges">
@@ -40,7 +39,7 @@
         <div class="heroCopy">
           <span class="eyebrow">دقة قبل السرعة · مراجعة قبل الاعتماد</span>
           <h1>من بطاقة نافس إلى تشخيص واضح وخطة تحسين قابلة للقياس</h1>
-          <p>يستخدم الإصدار ٧ قارئ ذكاء اصطناعي متعدد الوسائط لفهم صفحات PDF والرسوم والنصوص، ثم يمرر القيم إلى محرك تحقق حسابي محلي. لا تُقبل قيمة غير مؤكدة بالتخمين، وتبقى المراجعة البشرية إلزامية.</p>
+          <p>يقرأ الإصدار ٧٫١٫١ كل بطاقة نافس مرفوعة كعملية مستقلة، ويفهم صفحات PDF والرسوم والنصوص بالذكاء الاصطناعي، ثم يمرر القيم إلى محرك تحقق حسابي محلي. لا تُقبل قيمة غير مؤكدة بالتخمين، ولا تنتقل بيانات ملف سابق إلى ملف جديد.</p>
           <div class="heroActions">
             <button class="button primary large" type="button" data-hero-action="choose">اختيار بطاقة نافس</button>
             <button class="button secondary large" type="button" data-hero-action="manual">إدخال يدوي</button>
@@ -73,7 +72,7 @@
       <div class="shell">
         <div class="sectionHeading">
           <div><span class="stepNumber">١</span><h2>قراءة البطاقة</h2></div>
-          <p>يفضل ملف PDF الأصلي. قارئ AI هو المسار الأساسي بعد ربط الخادم، والمعاينة تتم محليًا. الحد الحالي ٢٠ ميجابايت.</p>
+          <p>يفضل ملف PDF الأصلي. قارئ AI هو المسار الأساسي بعد ربط الخادم، والمعاينة تتم محليًا. الحد الحالي لحجم الملف ٢٠ ميجابايت، دون حد مخصص لعدد مرات الاستخدام داخل التطبيق.</p>
         </div>
 
         <div class="readerGrid">
@@ -109,9 +108,6 @@
             </div>
 
             <div class="buttonRow">
-              <button class="button secondary small" type="button" data-demo-grade="g3">تجربة الثالث</button>
-              <button class="button secondary small" type="button" data-demo-grade="g6">تجربة السادس</button>
-              <button class="button secondary small" type="button" data-demo-grade="g9">تجربة ثالث المتوسط</button>
               <button class="button quiet small" id="manualBtn" type="button">إدخال يدوي</button>
             </div>
 
@@ -200,7 +196,6 @@
     <div class="shell footerCard">
       <img src="assets/images/logo.jpg" alt="" width="72" height="72">
       <div><strong>أ/ فاطمة هزازي</strong><span>ملتقى معلمي ومعلمات الرياضيات · ملتقى التعليم التفاعلي</span></div>
-      <small>الإصدار ٧٫٠٫٢ AI الآمن — لا يُكشف مفتاح API للمستفيد، ولا توجد قاعدة بيانات للمدارس في الحزمة. تُرسل البطاقة مؤقتًا إلى خدمة AI للقراءة عند تفعيلها، ثم يبقى التحليل والتصدير محليين.</small>
     </div>
   </footer>
 

@@ -8,6 +8,7 @@ import {
   makeDemoData,
   defaultDomainsFor,
   parseNumber,
+  toArabicDigits,
   canonicalDomainName
 } from './parser.js';
 import { analyzeData } from './analysis.js';
@@ -105,7 +106,7 @@ function clampPercent(value) {
   const parsed = number(value);
   return parsed === null ? 0 : Math.max(0, Math.min(100, parsed));
 }
-function gradeMeta(grade) { return GRADE_META[grade] || GRADE_META.g3; }
+function gradeMeta(grade) { return GRADE_META[grade] || { name: 'صف غير محدد', stage: '', subjects: [] }; }
 function show(element) { element?.classList.remove('hidden'); }
 function hide(element) { element?.classList.add('hidden'); }
 function scrollToElement(element) {
@@ -128,7 +129,7 @@ function subjectIcon(name) {
   return ({ الرياضيات: '➗', العلوم: '🔬', القراءة: '📖' })[name] || '📘';
 }
 function severityLabel(value) {
-  return ({ high: 'عالية', medium: 'متوسطة', diagnostic: 'تشخيصية', monitor: 'متابعة' })[value] || value;
+  return ({ remedial: 'علاجي', improvement: 'تحسين', sustain: 'محافظة على القوة', diagnostic: 'غير مكتمل' })[value] || value;
 }
 function confidenceLabel(value) {
   return ({ high: 'دقة أولية مرتفعة', medium: 'تحتاج مراجعة', partial: 'قراءة جزئية', low: 'دقة منخفضة', none: 'غير مقروء', demo: 'تجريبي' })[value] || 'تحتاج مراجعة';
@@ -150,6 +151,17 @@ function blankSubject(name, grade) {
 function normalizeData(data, { fillExpectedSubjects = false } = {}) {
   const base = makeBlankData();
   const normalized = { ...base, ...(data || {}) };
+  // توافق مع النسخ السابقة دون تثبيت أي بيانات: region القديمة كانت تعني إدارة التعليم، وarea كانت تعني المنطقة.
+  if (!hasValue(normalized.educationAdministration) && hasValue(data?.region) && hasValue(data?.area)) {
+    normalized.educationAdministration = data.region;
+    normalized.region = data.area;
+  }
+  normalized.educationAdministration = normalized.educationAdministration || '';
+  normalized.region = normalized.region || '';
+  normalized.academicYear = normalized.academicYear || '';
+  normalized.measurementYear = normalized.measurementYear || (number(normalized.year) >= 2000 ? number(normalized.year) : '');
+  normalized.overallChange = hasValue(normalized.overallChange) ? normalized.overallChange : normalized.change;
+  normalized.change = normalized.overallChange;
   const resolvedGrade = GRADE_META[normalized.grade] ? normalized.grade : '';
   normalized.grade = resolvedGrade;
   normalized.gradeName = resolvedGrade ? GRADE_META[resolvedGrade].name : '';
@@ -189,22 +201,39 @@ function extractionQuality(data) {
   const expected = grade ? GRADE_META[grade].subjects : [];
   const subjects = Array.isArray(data?.subjects) ? data.subjects : [];
   const subjectMap = new Map(subjects.map(subject => [subject.name, subject]));
+
+  const metadataFields = [
+    data?.school, data?.ministerialId, data?.educationAdministration, data?.region,
+    grade, data?.academicYear, data?.measurementYear, data?.total, data?.tested
+  ];
+  const metadataReady = metadataFields.filter(hasValue).length;
+  const metadataRatio = metadataReady / metadataFields.length;
+
   const coreReady = expected.filter(name => {
     const subject = subjectMap.get(name);
     if (!subject) return false;
     const levels = ['veryLow', 'low', 'medium', 'high'].filter(key => number(subject[key]) !== null).length;
-    const summary = number(subject.schoolAvg) !== null || number(subject.mastery) !== null;
-    return levels >= 3 && summary;
+    return levels === 4 && number(subject.schoolAvg) !== null && number(subject.mastery) !== null;
   }).length;
-  const domainValues = subjects.reduce((count, subject) => count + (subject.domains || []).filter(domain => number(domain.value) !== null).length, 0);
-  const metadataReady = [data?.school, grade, data?.total, data?.tested].filter(hasValue).length;
-  const foundExpected = expected.filter(name => subjectMap.has(name)).length;
   const expectedCount = expected.length;
-  const completeSubjects = expectedCount ? coreReady === expectedCount : coreReady > 0;
-  const needsOcr = !grade || metadataReady < 3 || (expectedCount > 0 && (foundExpected < expectedCount || !completeSubjects));
-  const usable = Boolean(grade && subjects.length && (coreReady > 0 || domainValues > 0));
-  const score = Math.round((metadataReady / 4 * 30) + (expectedCount ? foundExpected / expectedCount * 20 : 0) + (expectedCount ? coreReady / expectedCount * 40 : 0) + Math.min(10, domainValues * 2));
-  return { grade, expectedCount, foundExpected, coreReady, domainValues, metadataReady, needsOcr, usable, score: Math.max(0, Math.min(100, score)) };
+  const foundExpected = expected.filter(name => subjectMap.has(name)).length;
+  const subjectRatio = expectedCount ? coreReady / expectedCount : 0;
+
+  const expectedDomainCount = subjects.reduce((sum, subject) => sum + defaultDomainsFor(grade, subject.name).length, 0);
+  const readableDomains = subjects.reduce((count, subject) => count + (subject.domains || []).filter(domain => number(domain.value) !== null).length, 0);
+  const domainRatio = expectedDomainCount ? Math.min(1, readableDomains / expectedDomainCount) : (readableDomains ? 1 : 0);
+
+  const overallReady = [data?.overallMastery, data?.overallChange].filter(value => number(value) !== null).length;
+  const overallRatio = overallReady / 2;
+
+  const completeSubjects = expectedCount ? coreReady === expectedCount : false;
+  const needsOcr = !grade || metadataRatio < 0.55 || (expectedCount > 0 && (foundExpected < expectedCount || !completeSubjects)) || domainRatio < 0.5;
+  const usable = Boolean(grade && subjects.length && coreReady > 0);
+  const score = Math.round(metadataRatio * 25 + subjectRatio * 40 + domainRatio * 25 + overallRatio * 10);
+  return {
+    grade, expectedCount, foundExpected, coreReady, domainValues: readableDomains,
+    metadataReady, needsOcr, usable, score: Math.max(0, Math.min(100, score))
+  };
 }
 
 function mergeSubject(primary = {}, secondary = {}, grade = '') {
@@ -236,7 +265,7 @@ function mergeSubject(primary = {}, secondary = {}, grade = '') {
 function mergeParsedData(primary, secondary) {
   const grade = GRADE_META[primary?.grade] ? primary.grade : (GRADE_META[secondary?.grade] ? secondary.grade : '');
   const out = { ...(secondary || {}), ...(primary || {}) };
-  for (const key of ['school','ministerialId','gender','region','area','stage','grade','gradeName','year','total','tested','change','overallMastery']) {
+  for (const key of ['school','ministerialId','gender','schoolType','educationAdministration','region','stage','grade','gradeName','academicYear','measurementYear','year','total','tested','overallChange','change','overallMastery']) {
     if (!hasValue(primary?.[key]) && hasValue(secondary?.[key])) out[key] = secondary[key];
   }
   if (!GRADE_META[out.grade] && grade) out.grade = grade;
@@ -363,19 +392,20 @@ function renderMetadata() {
     fieldHtml({ key: 'school', label: 'اسم المدرسة', value: d.school, span: 'span2' }),
     fieldHtml({ key: 'ministerialId', label: 'الرقم الوزاري', value: d.ministerialId }),
     fieldHtml({ key: 'gender', label: 'الفئة', value: d.gender, type: 'select', options: ['غير محدد', 'بنين', 'بنات'] }),
-    fieldHtml({ key: 'region', label: 'إدارة التعليم', value: d.region, span: 'span2' }),
-    fieldHtml({ key: 'area', label: 'المنطقة', value: d.area }),
-    fieldHtml({ key: 'schoolType', label: 'نوع المدرسة', value: d.schoolType, type: 'select', options: ['حكومي', 'أهلي', 'عالمي', 'غير محدد'] }),
+    fieldHtml({ key: 'educationAdministration', label: 'إدارة التعليم', value: d.educationAdministration, span: 'span2' }),
+    fieldHtml({ key: 'region', label: 'المنطقة', value: d.region }),
+    fieldHtml({ key: 'schoolType', label: 'نوع المدرسة', value: d.schoolType, type: 'select', options: ['غير محدد', 'حكومي', 'أهلي', 'عالمي'] }),
     fieldHtml({ key: 'grade', label: 'الصف', value: d.grade, type: 'select', options: [
       { value: '', label: '— حددي الصف —' },
       ...Object.entries(GRADE_META).map(([value, meta]) => ({ value, label: meta.name }))
     ] }),
     fieldHtml({ key: 'stage', label: 'المرحلة', value: d.stage }),
-    fieldHtml({ key: 'year', label: 'العام الدراسي', value: d.year, type: 'number' }),
+    fieldHtml({ key: 'academicYear', label: 'العام الدراسي', value: d.academicYear, hint: 'يظهر كما ورد في البطاقة، مثل ١٤٤٧هـ.' }),
+    fieldHtml({ key: 'measurementYear', label: 'سنة القياس', value: d.measurementYear, type: 'number', hint: 'السنة الحالية في الرسوم، مثل ٢٠٢٦.' }),
     fieldHtml({ key: 'pageCount', label: 'عدد صفحات المصدر', value: d.pageCount || '', type: 'number', readonly: true }),
     fieldHtml({ key: 'total', label: 'عدد الطلبة الإجمالي', value: d.total, type: 'number' }),
     fieldHtml({ key: 'tested', label: 'عدد المختبرين', value: d.tested, type: 'number' }),
-    fieldHtml({ key: 'change', label: 'مقدار التغير العام', value: d.change, type: 'number' }),
+    fieldHtml({ key: 'overallChange', label: 'مقدار التغير العام', value: d.overallChange, type: 'number' }),
     fieldHtml({ key: 'overallMastery', label: 'الإتقان العام المشترك', value: d.overallMastery, type: 'number', hint: 'اتركيه فارغًا إن لم يظهر بوضوح.' })
   ].join('');
 }
@@ -560,6 +590,8 @@ async function handleFile(file, { forceOcr = false } = {}) {
   state.controller?.abort();
   state.controller = new AbortController();
   state.file = file;
+  // عزل كل عملية قراءة عن السابقة: لا تبقى أي بيانات مدرسة/ملف سابق في الحالة.
+  state.data = normalizeData(makeBlankData());
   state.analysis = null;
   state.worksheets = [];
   state.warnings = [];
@@ -824,21 +856,21 @@ function renderAnalysis() {
       ${kpi('متوسط إتقان المواد', pct(e.averageMastery), 'متوسط المواد المكتملة')}
       ${kpi('متوسط الدرجات', fmt(e.averageScore), 'ليس نسبة الإتقان')}
       ${kpi('الإتقان العام', pct(e.overallMastery), 'كما ورد في البطاقة')}
+      ${kpi('التغير العام', signed(e.overallChange), 'مرتبط بالمؤشر العام')}
       ${kpi('أعلى مجال', strong ? pct(strong.value) : '—', strong ? `${strong.subject} · ${strong.domain}` : '')}
-      ${kpi('أدنى مجال', weak ? pct(weak.value) : '—', weak ? `${weak.subject} · ${weak.domain}` : '')}
     </div></section>
 
     <section class="analysisBlock"><h3>تفسير المواد</h3><p class="analysisIntro">وصف مباشر للبيانات دون افتراض أسباب لم تثبت بقياس تشخيصي.</p><div class="subjectSummaryGrid">${subjectCards}</div></section>
 
-    <section class="analysisBlock"><h3>ترتيب المجالات حسب الأولوية</h3><p class="analysisIntro">تعتمد الأولوية على مستوى المدرسة والفجوة عن أفضل مرجع متاح.</p><div class="tableWrap"><table class="dataTable"><thead><tr><th>المادة والمجال</th><th>المقارنة</th><th>الفجوة</th><th>الأولوية</th><th>التفسير</th></tr></thead><tbody>${priorities}</tbody></table></div></section>
+    <section class="analysisBlock"><h3>تصنيف المجالات حسب الحاجة</h3><p class="analysisIntro">التصنيف: علاجي عند فجوة كبيرة، تحسين عند فجوة متوسطة، ومحافظة على القوة عندما يكون الأداء قريبًا من المرجع أو أعلى منه.</p><div class="tableWrap"><table class="dataTable"><thead><tr><th>المادة والمجال</th><th>المقارنة</th><th>الفجوة</th><th>التصنيف</th><th>التفسير</th></tr></thead><tbody>${priorities}</tbody></table></div></section>
 
-    <section class="analysisBlock"><h3>خطة التحسين العملية</h3><p class="analysisIntro">إجراءات مرتبطة بالأولوية وشواهد قابلة للمتابعة.</p>${actions ? `<div class="actionGrid">${actions}</div>` : '<div class="issue good">لا توجد أولوية علاجية مرتفعة وفق البيانات المكتملة.</div>'}</section>
+    <section class="analysisBlock"><h3>خطة التحسين العملية</h3><p class="analysisIntro">إجراءات مرتبطة بالأولوية وشواهد قابلة للمتابعة.</p>${actions ? `<div class="actionGrid">${actions}</div>` : '<div class="issue good">لا توجد مجالات مصنفة كعلاجية أو تحسين وفق البيانات المكتملة.</div>'}</section>
 
     <section class="analysisBlock"><h3>قياس الأثر</h3><div class="impactGrid">${impactEntries.map(([title, text]) => `<article class="impactCard"><b>${esc(title)}</b><p>${esc(text)}</p></article>`).join('')}</div></section>
 
     <section class="analysisBlock"><h3>خطة زمنية لأربعة أسابيع</h3><div class="timelineGrid">${a.timeline.map(item => `<article class="timelineItem"><span>${esc(item.week)}</span><h4>${esc(item.title)}</h4><p>${esc(item.tasks)}</p></article>`).join('')}</div></section>
 
-    <section class="analysisBlock"><h3>أوراق العمل ونماذج الإجابة</h3><p class="analysisIntro">١٠ أسئلة متدرجة، وسؤالان للتفكير، و٣ أسئلة ختامية لكل أولوية.</p>${state.worksheets.length ? `<div class="worksheetList">${state.worksheets.map(sheet => worksheetHtml(sheet)).join('')}</div>` : '<div class="issue good">لا تُنشأ ورقة قبل وجود أولوية فعلية أو تشخيصية.</div>'}</section>
+    <section class="analysisBlock"><h3>أوراق العمل ونماذج الإجابة</h3><p class="analysisIntro">١٠ أسئلة متدرجة، وسؤالان للتفكير، و٣ أسئلة ختامية لكل أولوية.</p>${state.worksheets.length ? `<div class="worksheetList">${state.worksheets.map(sheet => worksheetHtml(sheet)).join('')}</div>` : '<div class="issue good">لا تُنشأ ورقة عمل إلا لمجال مصنف علاجيًا أو للتحسين.</div>'}</section>
   `;
 }
 
@@ -864,17 +896,39 @@ function buildReportHtml() {
   const a = state.analysis;
   const e = a.executive;
   const validationWarnings = a.validation.filter(item => item.level === 'warning');
-  const domains = a.subjects.flatMap(subject => (subject.domains || []).map(domain => `<tr><td><b>${esc(subject.name)}</b></td><td>${esc(domain.name)}</td><td>${pct(domain.value)}</td><td>${pct(domain.admin)}</td><td>${pct(domain.kingdom)}</td><td>${pct(domain.benchmark)}</td></tr>`)).join('');
+  const domains = a.subjects.flatMap(subject => (subject.domains || []).map(domain => {
+    const priority = a.priorities.find(item => item.subject === subject.name && item.domain === domain.name);
+    return `<tr><td><b>${esc(subject.name)}</b></td><td>${esc(domain.name)}</td><td>${pct(domain.value)}</td><td>${pct(domain.admin)}</td><td>${pct(domain.kingdom)}</td><td>${pct(domain.benchmark)}</td><td>${priority ? priorityBadge(priority.severity) : '—'}</td></tr>`;
+  })).join('');
+
+  const remedial = a.priorities.filter(item => item.severity === 'remedial');
+  const improvement = a.priorities.filter(item => item.severity === 'improvement');
+  const sustain = a.priorities.filter(item => item.severity === 'sustain');
+
+  const actionSection = a.actionUnits.length
+    ? a.actionUnits.map(unit => `<article class="reportAction ${esc(unit.severity)}"><h4>${fmt(unit.order, true)}. ${esc(unit.subject)} — ${esc(unit.domain)}</h4><p>${esc(unit.reason)}</p><ul>${unit.teacherActions.map(item => `<li>${esc(item)}</li>`).join('')}</ul><p><b>محك النجاح:</b> ${esc(unit.successCriterion)}</p></article>`).join('')
+    : '<p>لا توجد مجالات مصنفة كأولوية علاجية أو تحسين وفق القيم المرجعية المكتملة.</p>';
+
+  const sustainSection = sustain.length
+    ? `<div class="sustainGrid">${sustain.map(item => `<article class="sustainCard"><b>${esc(item.subject)} — ${esc(item.domain)}</b><p>${esc(item.reason)}</p><small>الإجراء: تثبيت الممارسة الناجحة، متابعة دورية، وإثراء للمتقنين.</small></article>`).join('')}</div>`
+    : '<p class="muted">لا توجد مجالات مكتملة مصنفة للمحافظة على القوة.</p>';
+
+  const academicYearText = hasValue(d.academicYear) ? toArabicDigits(String(d.academicYear)) : '—';
+  const measurementYearText = number(d.measurementYear) === null ? '—' : fmt(d.measurementYear, true);
 
   return `<article class="reportDocument">
-    <header class="reportCover"><div class="reportCoverInner"><div><small>لوحة تحليل نتائج نافس وخطة رفع مستوى الأداء</small><h2>${esc(d.school || 'المدرسة')}</h2><p>${esc(d.gradeName || gradeMeta(d.grade).name)} · العام الدراسي ${fmt(d.year, true)}</p></div><img class="reportLogo" src="assets/images/logo.jpg" alt="شعار ملتقى التعليم التفاعلي"></div></header>
+    <header class="reportCover"><div class="reportCoverInner"><div><small>لوحة تحليل نتائج نافس وخطة رفع مستوى الأداء</small><h2>${esc(d.school || 'المدرسة')}</h2><p>${esc(d.gradeName || gradeMeta(d.grade).name)} · العام الدراسي ${esc(academicYearText)} · سنة القياس ${esc(measurementYearText)}</p></div><img class="reportLogo" src="assets/images/logo.jpg" alt="شعار ملتقى التعليم التفاعلي"></div></header>
     <div class="reportMeta">
       <div><small>الصف</small><b>${esc(d.gradeName || gradeMeta(d.grade).name)}</b></div>
-      <div><small>العام</small><b>${fmt(d.year, true)}</b></div>
+      <div><small>العام الدراسي</small><b>${esc(academicYearText)}</b></div>
+      <div><small>سنة القياس</small><b>${esc(measurementYearText)}</b></div>
+      <div><small>الرقم الوزاري</small><b>${esc(d.ministerialId || '—')}</b></div>
       <div><small>الطلبة</small><b>${fmt(d.total, true)}</b></div>
       <div><small>المختبرون</small><b>${fmt(d.tested, true)}</b></div>
       <div><small>الفئة</small><b>${esc(d.gender || '—')}</b></div>
-      <div><small>إدارة التعليم</small><b>${esc(d.region || '—')}</b></div>
+      <div><small>نوع المدرسة</small><b>${esc(d.schoolType || 'غير محدد')}</b></div>
+      <div><small>إدارة التعليم</small><b>${esc(d.educationAdministration || '—')}</b></div>
+      <div><small>المنطقة</small><b>${esc(d.region || '—')}</b></div>
     </div>
     <div class="reportBody">
       <section class="reportSection"><div class="reportSectionTitle"><span>١</span><h3>الملخص التنفيذي</h3></div><div class="reportExecutive">
@@ -882,13 +936,18 @@ function buildReportHtml() {
         <div class="reportMetric"><small>متوسط الإتقان</small><b>${pct(e.averageMastery)}</b></div>
         <div class="reportMetric"><small>متوسط الدرجات</small><b>${fmt(e.averageScore)}</b></div>
         <div class="reportMetric"><small>الإتقان العام</small><b>${pct(e.overallMastery)}</b></div>
-      </div><p class="reportNarrative">تم بناء التقرير من البيانات التي راجعها المستخدم. لا يفسر التقرير أسباب النتائج دون تشخيص إضافي، ولا يعتمد قيمة غير مقروءة على أنها صفر.</p></section>
+        <div class="reportMetric"><small>التغير العام</small><b>${signed(e.overallChange)}</b></div>
+      </div><p class="reportNarrative">تم بناء التقرير من بيانات الملف الحالي بعد مراجعة المستخدم. لا يحتفظ التقرير بأي قيم من ملف سابق، ولا يفترض بيانات مدرسة أو نوع مدرسة غير موجودة في المصدر.</p></section>
 
       <section class="reportSection"><div class="reportSectionTitle"><span>٢</span><h3>مؤشرات المواد</h3></div><div class="reportSubjects">${a.subjects.map((subject, index) => reportSubjectHtml(subject, a.interpretations[index])).join('')}</div></section>
 
-      <section class="reportSection"><div class="reportSectionTitle"><span>٣</span><h3>المجالات والمراجع</h3></div><div class="tableWrap"><table class="dataTable"><thead><tr><th>المادة</th><th>المجال</th><th>المدرسة</th><th>إدارة التعليم</th><th>المملكة</th><th>المستهدف</th></tr></thead><tbody>${domains}</tbody></table></div></section>
+      <section class="reportSection"><div class="reportSectionTitle"><span>٣</span><h3>المجالات والمراجع والتصنيف</h3></div><div class="tableWrap"><table class="dataTable"><thead><tr><th>المادة</th><th>المجال</th><th>المدرسة</th><th>إدارة التعليم</th><th>المملكة</th><th>المستهدف</th><th>التصنيف</th></tr></thead><tbody>${domains}</tbody></table></div></section>
 
-      <section class="reportSection"><div class="reportSectionTitle"><span>٤</span><h3>الأولويات وخطة التحسين</h3></div>${a.actionUnits.length ? a.actionUnits.map(unit => `<article class="reportAction"><h4>${fmt(unit.order, true)}. ${esc(unit.subject)} — ${esc(unit.domain)}</h4><p>${esc(unit.reason)}</p><ul>${unit.teacherActions.map(item => `<li>${esc(item)}</li>`).join('')}</ul><p><b>محك النجاح:</b> ${esc(unit.successCriterion)}</p></article>`).join('') : '<p>لا توجد أولوية علاجية مرتفعة وفق البيانات المكتملة.</p>'}</section>
+      <section class="reportSection"><div class="reportSectionTitle"><span>٤</span><h3>الأولويات وخطة التحسين</h3></div>
+        <div class="classificationSummary"><span class="classChip remedial">علاجي: ${fmt(remedial.length, true)}</span><span class="classChip improvement">تحسين: ${fmt(improvement.length, true)}</span><span class="classChip sustain">محافظة على القوة: ${fmt(sustain.length, true)}</span></div>
+        ${actionSection}
+        <h4 class="subsectionTitle">مجالات المحافظة على القوة</h4>${sustainSection}
+      </section>
 
       <section class="reportSection"><div class="reportSectionTitle"><span>٥</span><h3>قياس الأثر</h3></div><div class="impactGrid"><article class="impactCard"><b>القياس القبلي</b><p>${esc(a.impact.baseline)}</p></article><article class="impactCard"><b>المتابعة</b><p>${esc(a.impact.formative)}</p></article><article class="impactCard"><b>القياس البعدي</b><p>${esc(a.impact.post)}</p></article><article class="impactCard"><b>اتخاذ القرار</b><p>${esc(a.impact.decision)}</p></article></div></section>
 
@@ -978,8 +1037,10 @@ function chooseFile() {
   if (!state.reading) els.fileInput.click();
 }
 
+// بعض مجموعات الأزرار اختيارية (مثل أزرار البيانات التجريبية التي أزيلت من النسخة العامة).
+// لا نوقف التطبيق كله إذا كانت المجموعة الاختيارية فارغة؛ نتحقق فقط من العناصر المفردة الإلزامية.
 const missingElements = Object.entries(els)
-  .filter(([, value]) => Array.isArray(value) ? value.length === 0 : !value)
+  .filter(([, value]) => !Array.isArray(value) && !value)
   .map(([key]) => key);
 if (missingElements.length) {
   throw new Error(`تعذر تشغيل الواجهة: عناصر مفقودة (${missingElements.join(', ')}).`);
@@ -1036,6 +1097,7 @@ els.wordBtn.addEventListener('click', () => exportOffice('docx'));
 els.excelBtn.addEventListener('click', () => exportOffice('xlsx'));
 els.pptBtn.addEventListener('click', () => exportOffice('pptx'));
 els.jsonBtn.addEventListener('click', exportJson);
+els.testAiBtn.addEventListener('click', () => { void refreshAiStatus(); });
 els.privacyBtn.addEventListener('click', () => els.privacyDialog.showModal());
 els.rawTextBtn.addEventListener('click', () => {
   els.rawText.textContent = state.rawText || 'لا يوجد نص خام متاح.';
@@ -1062,3 +1124,5 @@ async function refreshAiStatus() {
 renderEmptyPreview();
 renderFileSummary();
 setStatus('لم يتم اختيار ملف بعد.');
+// فحص الاتصال غير حاجب للواجهة؛ تبقى جميع الأزرار عاملة حتى لو تعذر الخادم مؤقتًا.
+void refreshAiStatus();

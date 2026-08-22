@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'nafis-secure-v7.0.2-connected-shell';
+const CACHE_NAME = 'nafis-results-0-v7.1.3-ai-secure-clean-footer';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './assets/css/app.css',

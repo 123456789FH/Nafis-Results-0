@@ -90,23 +90,30 @@ function priorityFor(subject, domain, subjectIndex, domainIndex) {
   const reference = referenceFor(domain);
   const gap = value !== null && reference.value !== null ? round1(value - reference.value) : null;
   let severity = 'diagnostic';
-  let score = 25;
-  let reason = 'القيمة غير مكتملة؛ الأولوية تشخيصية حتى التحقق اليدوي.';
+  let score = 0;
+  let reason = 'القيمة غير مكتملة؛ لا يصنف المجال حتى التحقق اليدوي.';
 
   if (value !== null) {
-    const absoluteScore = 100 - value;
-    const gapPenalty = gap !== null && gap < 0 ? Math.abs(gap) * 1.4 : 0;
-    score = round1(Math.min(100, absoluteScore * 0.7 + gapPenalty));
-    if (value < APP_CONFIG.priorityThresholds.high || (gap !== null && gap <= -10)) severity = 'high';
-    else if (value < APP_CONFIG.priorityThresholds.medium || (gap !== null && gap <= APP_CONFIG.priorityThresholds.referenceHighGap)) severity = 'medium';
-    else severity = 'monitor';
-
     if (gap !== null) {
-      reason = gap < 0
-        ? `الأداء ${value}٪، بفجوة ${Math.abs(gap)} نقطة عن ${reference.label}.`
-        : `الأداء ${value}٪، ويتجاوز ${reference.label} بمقدار ${gap} نقطة.`;
+      if (gap <= APP_CONFIG.priorityThresholds.remedialGap) severity = 'remedial';
+      else if (gap < APP_CONFIG.priorityThresholds.improvementGap) severity = 'improvement';
+      else severity = 'sustain';
+      score = round1(Math.min(100, Math.max(0, -gap) * 2 + Math.max(0, 65 - value) * 0.35));
+      if (severity === 'remedial') reason = `الأداء ${value}٪، بفجوة ${Math.abs(gap)} نقطة عن ${reference.label}؛ أولوية علاجية.`;
+      else if (severity === 'improvement') reason = `الأداء ${value}٪، بفجوة ${Math.abs(gap)} نقطة عن ${reference.label}؛ مجال تحسين.`;
+      else reason = gap >= 0
+        ? `الأداء ${value}٪، ويتجاوز ${reference.label} بمقدار ${gap} نقطة؛ مجال قوة يُحافظ عليه.`
+        : `الأداء ${value}٪، قريب من ${reference.label} بفارق ${Math.abs(gap)} نقطة؛ محافظة ومتابعة.`;
     } else {
-      reason = `الأداء ${value}٪؛ لا تتوفر قيمة مرجعية مكتملة للمقارنة.`;
+      if (value < APP_CONFIG.priorityThresholds.remedialAbsolute) severity = 'remedial';
+      else if (value < APP_CONFIG.priorityThresholds.improvementAbsolute) severity = 'improvement';
+      else severity = 'sustain';
+      score = round1(Math.max(0, 70 - value));
+      reason = severity === 'remedial'
+        ? `الأداء ${value}٪ دون ٥٠٪ ولا تتوفر قيمة مرجعية مكتملة؛ أولوية علاجية.`
+        : severity === 'improvement'
+          ? `الأداء ${value}٪ ويحتاج رفعًا تدريجيًا؛ لا تتوفر قيمة مرجعية مكتملة.`
+          : `الأداء ${value}٪؛ يُحافظ على الممارسة الناجحة مع متابعة دورية.`;
     }
   }
 
@@ -126,7 +133,7 @@ function priorityFor(subject, domain, subjectIndex, domainIndex) {
 }
 
 function severityOrder(severity) {
-  return ({ high: 0, medium: 1, diagnostic: 2, monitor: 3 })[severity] ?? 4;
+  return ({ remedial: 0, improvement: 1, diagnostic: 2, sustain: 3 })[severity] ?? 4;
 }
 
 function subjectInterpretation(subject) {
@@ -159,7 +166,7 @@ function subjectInterpretation(subject) {
 
 function buildActionUnit(priority, index) {
   const baseline = priority.value;
-  const desiredGain = priority.severity === 'high' ? 12 : priority.severity === 'medium' ? 8 : 5;
+  const desiredGain = priority.severity === 'remedial' ? 12 : priority.severity === 'improvement' ? 8 : 0;
   const target = baseline === null ? null : round1(Math.min(100, baseline + desiredGain));
   return {
     ...priority,
@@ -200,10 +207,10 @@ export function analyzeData(data) {
   });
   priorities.sort((a, b) => severityOrder(a.severity) - severityOrder(b.severity) || b.score - a.score || (a.value ?? 999) - (b.value ?? 999));
 
-  const actionPriorities = priorities.filter(priority => ['high', 'medium', 'diagnostic'].includes(priority.severity));
+  const actionPriorities = priorities.filter(priority => ['remedial', 'improvement'].includes(priority.severity));
   const selected = actionPriorities.slice(0, 6);
   const actionUnits = selected.map(buildActionUnit);
-  const strengths = priorities.filter(priority => priority.value !== null && (priority.value >= 70 || (priority.gap !== null && priority.gap >= 5)))
+  const strengths = priorities.filter(priority => priority.severity === 'sustain' && priority.value !== null)
     .sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
   const masteryValues = subjects.map(subject => numeric(subject?.mastery)).filter(value => value !== null);
